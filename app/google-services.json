@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "823398910269",
+    "project_id": "packt-8faaa",
+    "storage_bucket": "packt-8faaa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823398910269:android:b2417c53deb3b1c91fdd54",
+        "android_client_info": {
+          "package_name": "com.soundbite.packt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "823398910269-91h0fbrgobavrs28g47qu9j8qjf9or57.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA58Yp-eolXhWWdF47_J41qTh5mx_23fvc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "823398910269-91h0fbrgobavrs28g47qu9j8qjf9or57.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
