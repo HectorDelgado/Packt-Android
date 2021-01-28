@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'com.google.gms.google-services'
     id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 def dogApiKeyPropertiesFile = rootProject.file("secrets.properties")
@@ -23,6 +24,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "DOGAPI_KEY", dogApiKeyProperties['DOGAPI_KEY'])
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     buildTypes {
@@ -63,6 +68,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -76,7 +82,7 @@ dependencies {
     ////// Android Navigation
     /////////////////////////////
 
-    def nav_version = "2.3.2"
+    def nav_version = "2.3.3"
 
     // Kotlin
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
