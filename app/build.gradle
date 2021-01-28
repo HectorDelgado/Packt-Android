@@ -116,18 +116,11 @@ dependencies {
     ////// Firebase
     /////////////////////////////
 
-    // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:26.3.0')
-
-    // Declare the dependency for the Firebase Authentication library
     implementation 'com.google.firebase:firebase-auth-ktx'
-    implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
-
-    // Declare the dependency for the Firebase SDK for Google Analytics
     implementation 'com.google.firebase:firebase-analytics-ktx'
-
-    // Declare the dependency for the Realtime Database library
     implementation 'com.google.firebase:firebase-database-ktx'
+    implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
 
     /////////////////////////////
     ////// Moshi
