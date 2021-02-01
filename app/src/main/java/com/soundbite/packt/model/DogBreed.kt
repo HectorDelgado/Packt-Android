@@ -1,5 +1,6 @@
 package com.soundbite.packt.model
 
+import androidx.room.Entity
 import com.squareup.moshi.Json
 
 data class DogBreed(

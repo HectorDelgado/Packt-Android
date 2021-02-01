@@ -67,7 +67,7 @@ class InitialFragment : Fragment() {
         //auth.signOut()
 
         if (currentUser != null) {
-            Toast.makeText(requireContext(), "Signed in already", Toast.LENGTH_LONG).show()
+            // Redirect users to HomeFragment
 
         } else {
             // Launch sign-in intent

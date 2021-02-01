@@ -6,7 +6,7 @@ package com.soundbite.packt.model
  *
  * @param constructor A reference to the 1-arg constructor of the target class.
  */
-open class SingletonWithParamModel<out T, in A>(private val constructor: (A) -> T) {
+open class SingletonWithArgHolder<out T, in A>(private val constructor: (A) -> T) {
     @Volatile
     private var INSTANCE: T? = null
 
