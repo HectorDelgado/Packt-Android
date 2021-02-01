@@ -18,6 +18,8 @@ import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentInitialBinding
 import kotlinx.coroutines.*
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 
 /**
  * A simple [Fragment] subclass.
@@ -53,6 +55,10 @@ class InitialFragment : Fragment() {
         // Initialize View Binding
         _binding = FragmentInitialBinding.inflate(inflater, container, false)
         val view = binding.root
+
+//        binding.initialFragmentBtn.setOnClickListener {
+//            findNavController().navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
+//        }
         return view
     }
 
@@ -107,6 +113,4 @@ class InitialFragment : Fragment() {
             }
         }
     }
-
-
 }

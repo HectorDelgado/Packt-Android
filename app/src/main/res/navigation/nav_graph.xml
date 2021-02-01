@@ -8,5 +8,14 @@
         android:id="@+id/initialFragment"
         android:name="com.soundbite.packt.ui.InitialFragment"
         android:label="Initial"
-        tools:layout="@layout/fragment_initial" />
+        tools:layout="@layout/fragment_initial" >
+        <action
+            android:id="@+id/action_initialFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.soundbite.packt.ui.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
 </navigation>
