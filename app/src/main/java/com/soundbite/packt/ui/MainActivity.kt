@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
 
     private val dogBreedService by lazy { DogBreedService() }
