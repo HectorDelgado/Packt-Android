@@ -1,20 +1,23 @@
 package com.soundbite.packt.model
 
-import androidx.room.Entity
 import com.squareup.moshi.Json
 
 data class DogBreed(
-    @Json(name = "bred_for")val bredFor: String? = null,
-    @Json(name = "breed_group")val breedGroup: String? = null,
-    val height: Height,
     val id: Int,
-    val image: Image? = null,
-    @Json(name = "life_span")val lifeSpan: String,
     val name: String,
+    val height: Height,
+    val weight: Weight,
+    @Json(name = "reference_image_id")
+    val referenceImageId: String,
+    @Json(name = "life_span")
+    val lifeSpan: String,
+    val image: Image? = null,
     val origin: String? = null,
-    @Json(name = "reference_image_id")val referenceImageId: String,
     val temperament: String? = null,
-    val weight: Weight
+    @Json(name = "bred_for")
+    val bredFor: String? = null,
+    @Json(name = "breed_group")
+    val breedGroup: String? = null
 )
 
 data class Height(

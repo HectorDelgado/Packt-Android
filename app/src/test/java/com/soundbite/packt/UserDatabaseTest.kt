@@ -21,8 +21,8 @@ import java.util.*
  * WARNING!! THIS TEST FAILS! MUST CHECK DEPENDENCIES/VERSIONS BEFORE CONTINUING
  */
 class UserDatabaseTest {
-    private lateinit var userDao: UserDao
-    private lateinit var db: UserDatabase
+//    private lateinit var userDao: UserDao
+//    private lateinit var db: UserDatabase
 
 //    @Before
 //    fun createDb() {

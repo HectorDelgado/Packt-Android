@@ -20,6 +20,7 @@ import com.soundbite.packt.databinding.FragmentInitialBinding
 import kotlinx.coroutines.*
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.UserProfileChangeRequest
 
 /**
  * A simple [Fragment] subclass.
@@ -68,9 +69,6 @@ class InitialFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
-        currentUser = auth.currentUser
-        //auth.signOut()
 
         if (currentUser != null) {
             // Redirect users to HomeFragment
