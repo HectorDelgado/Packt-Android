@@ -73,6 +73,7 @@ class InitialFragment : Fragment() {
         if (currentUser != null) {
             // Redirect users to HomeFragment
 
+
         } else {
             // Launch sign-in intent
             startActivityForResult(
