@@ -56,10 +56,6 @@ class InitialFragment : Fragment() {
         // Initialize View Binding
         _binding = FragmentInitialBinding.inflate(inflater, container, false)
         val view = binding.root
-
-//        binding.initialFragmentBtn.setOnClickListener {
-//            findNavController().navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
-//        }
         return view
     }
 
@@ -70,10 +66,14 @@ class InitialFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        if (currentUser != null) {
-            // Redirect users to HomeFragment
+        //auth.signOut()
+        currentUser = auth.currentUser
 
+        if (currentUser != null) {
+            Log.d("logz", "We are logged in. Redirecting!")
+            findNavController().navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
         } else {
+            Log.d("logz", "We are not logged in!")
             // Launch sign-in intent
             startActivityForResult(
                     AuthUI.getInstance()
@@ -97,12 +97,12 @@ class InitialFragment : Fragment() {
 
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in/created account
-                val user = FirebaseAuth.getInstance().currentUser
-                Toast.makeText(requireContext(), "Signed in. Successfully!", Toast.LENGTH_LONG).show()
+                Log.d("logz", "Signed in. Successfully!")
+                findNavController().navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
             } else {
                 if (response == null) {
                     // User cancelled sign-in flow
-                    Toast.makeText(requireContext(), "Sign in cancelled", Toast.LENGTH_LONG).show()
+                    Log.d("logz", "Signed in cancelled")
                 } else {
                     val error = response.error
                     Log.e("logz", "Error in sign in occurred.")

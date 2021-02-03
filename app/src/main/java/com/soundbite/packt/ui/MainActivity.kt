@@ -29,9 +29,9 @@ class MainActivity : AppCompatActivity() {
 
         // Retrieve results in coroutine scope
         // Should run in IO dispatcher
-        CoroutineScope(Dispatchers.IO).launch {
-            // Store results, use as necessary
-            val allDogs = dogApiService.getAllDogs()
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//            // Store results, use as necessary
+//            val allDogs = dogApiService.getAllDogs()
+//        }
     }
 }
