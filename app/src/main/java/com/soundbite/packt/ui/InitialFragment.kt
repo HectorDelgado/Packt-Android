@@ -73,6 +73,7 @@ class InitialFragment : Fragment() {
             Log.d("logz", "We are logged in. Redirecting!")
             findNavController().navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
 
+
         } else {
             Log.d("logz", "We are not logged in!")
             // Launch sign-in intent
