@@ -69,6 +69,7 @@ class InitialFragment : Fragment() {
         //auth.signOut()
         currentUser = auth.currentUser
 
+
         if (currentUser != null) {
             Log.d("logz", "We are logged in. Redirecting!")
             findNavController().navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())

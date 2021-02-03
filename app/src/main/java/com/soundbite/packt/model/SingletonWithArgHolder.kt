@@ -10,6 +10,13 @@ open class SingletonWithArgHolder<out T, in A>(private val constructor: (A) -> T
     @Volatile
     private var INSTANCE: T? = null
 
+    /**
+     * Returns a singleton instance of the inherited class.
+     *
+     * @param arg The argument that will be passed to the singleton instance.
+     *
+     * @return a singleton instance of the inherited class.
+     */
     fun getInstance(arg: A) =
         INSTANCE ?: synchronized(this) {
             INSTANCE ?: constructor(arg).also {
