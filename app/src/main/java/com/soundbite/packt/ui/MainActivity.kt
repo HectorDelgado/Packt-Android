@@ -2,7 +2,9 @@ package com.soundbite.packt.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.navigation.NavigationView
@@ -18,8 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-//    private lateinit var drawerLayout: DrawerLayout
-//    private lateinit var navigationView: NavigationView
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,14 +30,14 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-//        drawerLayout = binding.drawerLayout
-//        navigationView = binding.navView
-//
-//        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-//        val navController = navHostFragment.navController
-//
-//        NavigationUI.setupWithNavController(navigationView, navController)
-//        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
+        drawerLayout = binding.drawerLayout
+        navigationView = binding.navView
+
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
+        NavigationUI.setupWithNavController(navigationView, navController)
 
         // How to use DogApi
         // Get instance of service builder, pass in base url
@@ -51,4 +53,9 @@ class MainActivity : AppCompatActivity() {
 //            val allDogs = dogApiService.getAllDogs()
 //        }
     }
+
+//    override fun onSupportNavigateUp(): Boolean {
+//        val navController = findNavController(R.id.nav_host_fragment)
+//        return NavigationUI.navigateUp(navController, drawerLayout)
+//    }
 }
