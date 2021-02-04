@@ -1,6 +1,7 @@
 package com.soundbite.packt.db
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Dao used to interact with the stored data in [UserDatabase].
@@ -10,6 +11,10 @@ interface OwnerDogDao {
     @Transaction
     @Query("SELECT * FROM DogOwner")
     suspend fun getOwnerAndDogs(): OwnerWithDogs
+
+    @Transaction
+    @Query("SELECT * FROM DogOwner")
+    fun getAllData(): Flow<OwnerWithDogs>
 
     @Query("SELECT * FROM DogOwner LIMIT 1")
     suspend fun getOwner(): DogOwner

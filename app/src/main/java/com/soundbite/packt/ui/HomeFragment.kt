@@ -6,12 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.room.RoomDatabase
 import com.soundbite.packt.databinding.FragmentHomeBinding
-import com.soundbite.packt.db.Dog
-import com.soundbite.packt.db.DogOwner
-import com.soundbite.packt.db.OwnerDogDao
-import com.soundbite.packt.db.UserDatabase
+import com.soundbite.packt.db.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,6 +26,13 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
 
+    private val db by lazy {
+        UserDatabase.getInstance(requireContext().applicationContext)
+    }
+    private val ownerDogViewModel: OwnerDogViewModel by viewModels {
+        OwnerDogViewModelFactory(db.ownerDogDao())
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,15 +48,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val db = UserDatabase.getInstance(requireContext().applicationContext)
         val userDao = db.ownerDogDao()
 
         Log.d("logz", "Looking through our db...")
 
         CoroutineScope(Dispatchers.IO).launch {
-            addData(userDao)
-            readData(userDao)
+            //addData(userDao)
+            //readData(userDao)
         }
+
+        ownerDogViewModel.getOwnerAndDogs().
     }
 
     private suspend fun addData(dao: OwnerDogDao) {
