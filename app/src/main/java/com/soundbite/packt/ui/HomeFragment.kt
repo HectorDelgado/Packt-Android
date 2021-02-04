@@ -4,9 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+
 import androidx.fragment.app.viewModels
+import android.widget.Toast
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.room.RoomDatabase
 import com.soundbite.packt.databinding.FragmentHomeBinding
 import com.soundbite.packt.db.*
@@ -57,7 +62,7 @@ class HomeFragment : Fragment() {
             //readData(userDao)
         }
 
-        ownerDogViewModel.getOwnerAndDogs().
+        //ownerDogViewModel.getOwnerAndDogs().
     }
 
     private suspend fun addData(dao: OwnerDogDao) {

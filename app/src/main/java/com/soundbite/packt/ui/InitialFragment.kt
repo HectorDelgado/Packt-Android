@@ -66,13 +66,15 @@ class InitialFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        //auth.signOut()
+//        auth.signOut()
         currentUser = auth.currentUser
 
 
         if (currentUser != null) {
             Log.d("logz", "We are logged in. Redirecting!")
             findNavController().navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
+
+
         } else {
             Log.d("logz", "We are not logged in!")
             // Launch sign-in intent
