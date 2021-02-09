@@ -1,6 +1,9 @@
 package com.soundbite.packt.db
 
-import androidx.room.*
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 /**
  * Defines the data model for a dog owner.

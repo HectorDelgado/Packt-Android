@@ -18,9 +18,9 @@ interface DogApi {
      */
     @GET("breeds")
     suspend fun getAllDogs(
-            @Query("attach_breed") attach_breed: Int? = null,
-            @Query("page") page: Int? = null,
-            @Query("limit") limit: Int? = null
+        @Query("attach_breed") attach_breed: Int? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
     ): List<DogBreed>
 
     /**

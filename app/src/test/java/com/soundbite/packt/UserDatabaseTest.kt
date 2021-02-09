@@ -1,21 +1,7 @@
 package com.soundbite.packt
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import com.soundbite.packt.db.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.*
-import org.junit.Assert.assertEquals
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
-import java.io.IOException
-import java.lang.Exception
-import java.util.*
+import org.junit.Test
 
 /**
  * WARNING!! THIS TEST FAILS! MUST CHECK DEPENDENCIES/VERSIONS BEFORE CONTINUING

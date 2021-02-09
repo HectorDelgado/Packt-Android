@@ -35,7 +35,11 @@ class RetrofitServiceBuilder private constructor(base_url: String) {
         return retrofit.create(serviceClass)
     }
 
-    fun <T> createService(serviceClass: Class<T>, headerName: String? = null, headerValue: String? = null): T {
+    fun <T> createService(
+        serviceClass: Class<T>,
+        headerName: String? = null,
+        headerValue: String? = null
+    ): T {
         if (headerName != null && headerValue != null) {
             httpClient.interceptors().clear()
             httpClient.addInterceptor { chain ->
@@ -52,5 +56,6 @@ class RetrofitServiceBuilder private constructor(base_url: String) {
         return retrofit.create(serviceClass)
     }
 
-    companion object : SingletonWithArgHolder<RetrofitServiceBuilder, String>(::RetrofitServiceBuilder)
+    companion object :
+        SingletonWithArgHolder<RetrofitServiceBuilder, String>(::RetrofitServiceBuilder)
 }
