@@ -4,11 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-
 import androidx.fragment.app.viewModels
-import android.widget.Toast
-import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI
 import androidx.room.RoomDatabase
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding

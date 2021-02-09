@@ -4,23 +4,19 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentInitialBinding
 import kotlinx.coroutines.*
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import com.google.firebase.auth.UserProfileChangeRequest
 
 /**
  * A simple [Fragment] subclass.
