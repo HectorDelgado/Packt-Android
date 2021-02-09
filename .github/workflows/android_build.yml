@@ -11,6 +11,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Access API Key
+        env:
+          DOG_API_KEY: ${{ secrets.DOG_API_KEY }}
+        run: echo DOGAPI_KEY=\"$DOG_API_KEY\" > secrets.properties
+
       - name: Set Up JDK 1.8
         uses: actions/setup-java@v1
         with:
