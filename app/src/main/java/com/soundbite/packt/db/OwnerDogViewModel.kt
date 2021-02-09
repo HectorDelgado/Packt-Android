@@ -15,7 +15,6 @@ class OwnerDogViewModelFactory(private val repository: OwnerDogDao) : ViewModelP
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(OwnerDogViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            
             return OwnerDogViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

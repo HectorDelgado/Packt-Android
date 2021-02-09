@@ -16,7 +16,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.databinding.FragmentInitialBinding
-import kotlinx.coroutines.*
 
 /**
  * A simple [Fragment] subclass.
@@ -29,7 +28,7 @@ class InitialFragment : Fragment() {
         get() = _binding!!
     private val RC_SIGN_IN = 2001
     private val providers = arrayListOf(
-            AuthUI.IdpConfig.EmailBuilder().build()
+        AuthUI.IdpConfig.EmailBuilder().build()
     )
 
     private var _binding: FragmentInitialBinding? = null
@@ -65,21 +64,22 @@ class InitialFragment : Fragment() {
 //        auth.signOut()
         currentUser = auth.currentUser
 
-
         if (currentUser != null) {
             Log.d("logz", "We are logged in. Redirecting!")
-            findNavController().navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
-
-
+            findNavController()
+                .navigate(
+                    InitialFragmentDirections.actionInitialFragmentToHomeFragment()
+                )
         } else {
             Log.d("logz", "We are not logged in!")
             // Launch sign-in intent
             startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setAvailableProviders(providers)
-                            .build(),
-                    RC_SIGN_IN)
+                AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(providers)
+                    .build(),
+                RC_SIGN_IN
+            )
         }
     }
 
@@ -97,7 +97,8 @@ class InitialFragment : Fragment() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in/created account
                 Log.d("logz", "Signed in. Successfully!")
-                findNavController().navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
+                findNavController()
+                    .navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
             } else {
                 if (response == null) {
                     // User cancelled sign-in flow

@@ -2,18 +2,26 @@ package com.soundbite.packt.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.room.RoomDatabase
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding
-import com.soundbite.packt.db.*
+import com.soundbite.packt.db.Dog
+import com.soundbite.packt.db.DogOwner
+import com.soundbite.packt.db.OwnerDogDao
+import com.soundbite.packt.db.OwnerDogViewModel
+import com.soundbite.packt.db.OwnerDogViewModelFactory
+import com.soundbite.packt.db.UserDatabase
+import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
-import kotlin.random.Random
 
 /**
  * A simple [Fragment] subclass.
@@ -33,7 +41,8 @@ class HomeFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
@@ -54,11 +63,11 @@ class HomeFragment : Fragment() {
         Log.d("logz", "Looking through our db...")
 
         CoroutineScope(Dispatchers.IO).launch {
-            //addData(userDao)
-            //readData(userDao)
+            // addData(userDao)
+            // readData(userDao)
         }
 
-        //ownerDogViewModel.getOwnerAndDogs().
+        // ownerDogViewModel.getOwnerAndDogs().
     }
 
     private suspend fun addData(dao: OwnerDogDao) {
@@ -66,21 +75,54 @@ class HomeFragment : Fragment() {
         val timestamp = System.currentTimeMillis() / 1000
 
         val owner = DogOwner(
-                ownerUid,
-                timestamp,
-                "user1001",
-                "Madrigal Senegal",
-                "Berlin is a great place to visit",
-                1,
-                1,
-                1992
+            ownerUid,
+            timestamp,
+            "user1001",
+            "Madrigal Senegal",
+            "Berlin is a great place to visit",
+            1,
+            1,
+            1992
         )
 
         dao.insertOwner(owner)
         val dogs = listOf(
-                Dog(Random.nextInt(Int.MAX_VALUE), 12158, ownerUid, timestamp, "Jeffrey", "a bio", 1, 1, 2018, "Great Dane"),
-                Dog(Random.nextInt(Int.MAX_VALUE), 12151, ownerUid, timestamp, "Fluffy", "a bio", 1, 1, 2010, "Poodle"),
-                Dog(Random.nextInt(Int.MAX_VALUE), 61211, ownerUid, timestamp, "Phoenix", "a bio", 1, 1, 2011, "Golden Retriever"),
+            Dog(
+                Random.nextInt(Int.MAX_VALUE),
+                12158,
+                ownerUid,
+                timestamp,
+                "Jeffrey",
+                "a bio",
+                1,
+                1,
+                2018,
+                "Great Dane"
+            ),
+            Dog(
+                Random.nextInt(Int.MAX_VALUE),
+                12151,
+                ownerUid,
+                timestamp,
+                "Fluffy",
+                "a bio",
+                1,
+                1,
+                2010,
+                "Poodle"
+            ),
+            Dog(
+                Random.nextInt(Int.MAX_VALUE),
+                61211,
+                ownerUid,
+                timestamp,
+                "Phoenix",
+                "a bio",
+                1,
+                1,
+                2011,
+                "Golden Retriever"
+            ),
         )
         dao.insertDogs(dogs)
     }

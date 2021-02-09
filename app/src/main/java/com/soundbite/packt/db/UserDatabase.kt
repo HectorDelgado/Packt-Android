@@ -13,14 +13,15 @@ import com.soundbite.packt.model.SingletonWithArgHolder
  */
 @Database(entities = [DogOwner::class, Dog::class], version = 1)
 abstract class UserDatabase : RoomDatabase() {
-    companion object
-        : SingletonWithArgHolder<UserDatabase, Context>(
-            { Room.databaseBuilder(
-                    it.applicationContext,
-                    UserDatabase::class.java,
-                    "user_database")
-                    .build()
-            }
+    companion object : SingletonWithArgHolder<UserDatabase, Context>(
+        {
+            Room.databaseBuilder(
+                it.applicationContext,
+                UserDatabase::class.java,
+                "user_database"
+            )
+                .build()
+        }
     )
 
     abstract fun ownerDogDao(): OwnerDogDao
