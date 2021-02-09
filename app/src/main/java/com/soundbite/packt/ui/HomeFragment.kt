@@ -2,17 +2,15 @@ package com.soundbite.packt.ui
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
 
 import androidx.fragment.app.viewModels
 import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.room.RoomDatabase
+import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding
 import com.soundbite.packt.db.*
 import kotlinx.coroutines.CoroutineScope
@@ -52,6 +50,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setHasOptionsMenu(true)
 
         val userDao = db.ownerDogDao()
 
@@ -100,4 +100,12 @@ class HomeFragment : Fragment() {
     private fun clearData(db: RoomDatabase) {
         db.clearAllTables()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.options_menu, menu)
+    }
+
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return NavigationUI.onNavDestinationSelected(item, requireView().findNavController())
+//    }
 }
