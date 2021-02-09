@@ -50,6 +50,10 @@ class MainActivity : AppCompatActivity() {
 //        }
     }
 
+    fun pointlessFunc() {
+        // This is for testing
+    }
+
 //    override fun onSupportNavigateUp(): Boolean {
 //        val navController = findNavController(R.id.nav_host_fragment)
 //        return NavigationUI.navigateUp(navController, drawerLayout)
