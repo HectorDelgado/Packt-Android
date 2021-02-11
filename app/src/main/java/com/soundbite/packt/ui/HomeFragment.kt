@@ -21,6 +21,7 @@ import com.soundbite.packt.db.UserDatabase
 import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.launch
 
 /**
@@ -58,11 +59,15 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
+        // (requireActivity() as DrawerLocker).setDrawerEnabled(true)
+
         val userDao = db.ownerDogDao()
 
         Log.d("logz", "Looking through our db...")
 
         CoroutineScope(Dispatchers.IO).launch {
+            val fe = ownerDogViewModel.getOwnerAndDogs().singleOrNull()
+            Log.d("logz", "Found ${fe?.dogs?.size} dogs")
             // addData(userDao)
             // readData(userDao)
         }

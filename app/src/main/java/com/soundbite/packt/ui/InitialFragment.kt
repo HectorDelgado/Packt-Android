@@ -56,22 +56,21 @@ class InitialFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // (requireActivity() as DrawerLocker).setDrawerEnabled(false)
     }
 
     override fun onStart() {
         super.onStart()
 
-//        auth.signOut()
         currentUser = auth.currentUser
 
         if (currentUser != null) {
-            Log.d("logz", "We are logged in. Redirecting!")
             findNavController()
                 .navigate(
                     InitialFragmentDirections.actionInitialFragmentToHomeFragment()
                 )
         } else {
-            Log.d("logz", "We are not logged in!")
             // Launch sign-in intent
             startActivityForResult(
                 AuthUI.getInstance()
