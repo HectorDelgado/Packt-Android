@@ -5,28 +5,30 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Dao used to interact with the stored data in [UserDatabase].
  */
 @Dao
 interface OwnerDogDao {
-    @Transaction
-    @Query("SELECT * FROM DogOwner")
-    suspend fun getOwnerAndDogs(): OwnerWithDogs
+//    @Transaction
+//    @Query("SELECT * FROM DogOwner")
+//    suspend fun getOwnerAndDogs(): OwnerWithDogs
 
-    @Transaction
-    @Query("SELECT * FROM DogOwner")
-    fun getAllData(): Flow<OwnerWithDogs>
+//    @Transaction
+//    @Query("SELECT * FROM DogOwner")
+//    fun getAllData(): Flow<OwnerWithDogs>
+
+//    @Transaction
+//    @Query("SELECT * FROM DogOwner")
+//    suspend fun getDogOwnerAndDogs(): DogOwnerWithDogs
 
     @Query("SELECT * FROM DogOwner LIMIT 1")
-    suspend fun getOwner(): DogOwner
+    suspend fun getDogOwner(): DogOwner
 
-    @Query("SELECT * FROM Dog WHERE dogUid=:id")
-    suspend fun getDogByDogOwnerId(id: Int): Dog
+    @Query("SELECT * FROM Dog")
+    suspend fun getDogs(): List<Dog>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOwner(dogOwner: DogOwner)

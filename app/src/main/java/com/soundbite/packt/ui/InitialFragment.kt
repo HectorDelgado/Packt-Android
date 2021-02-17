@@ -63,6 +63,7 @@ class InitialFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        // auth.signOut()
         currentUser = auth.currentUser
 
         if (currentUser != null) {
