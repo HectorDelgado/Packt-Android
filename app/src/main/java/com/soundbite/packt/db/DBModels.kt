@@ -1,6 +1,7 @@
 package com.soundbite.packt.db
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * Defines the data model for a dog owner.
@@ -60,17 +61,8 @@ data class Dog(
     val img: String? = null
 )
 
-///**
-// * Defines a one-to-many relationship between a single DogOwner and zero or more Dogs.
-// *
-// * @param dogOwner The owner of the dog(s).
-// * @param dogs The dog(s) owned by the user.
-// */
-//data class DogOwnerWithDogs(
-//    @Embedded val dogOwner: DogOwner,
-//    @Relation(
-//        parentColumn = "ownerUid",
-//        entityColumn = "dogOwnerUid"
-//    )
-//    val dogs: List<Dog>
-//)
+class DogOwnerWithDogs(
+    // @Embedded val dogOwner: DogOwner,
+    // @Relation( parentColumn = "ownerUid", entityColumn = "dogOwnerUid")
+    // val dogs: List<Dog>
+)

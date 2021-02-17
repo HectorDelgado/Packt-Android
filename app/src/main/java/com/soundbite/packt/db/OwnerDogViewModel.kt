@@ -18,7 +18,6 @@ class OwnerDogViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
         ownerDogDao.insertOwner(dogOwner)
         ownerDogDao.insertDogs(dogs)
     }
-
 }
 
 class OwnerDogViewModelFactory(private val repository: OwnerDogDao) : ViewModelProvider.Factory {

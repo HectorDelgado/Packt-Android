@@ -19,14 +19,15 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding
-import com.soundbite.packt.db.*
-import kotlin.random.Random
+import com.soundbite.packt.db.Dog
+import com.soundbite.packt.db.DogOwner
+import com.soundbite.packt.db.OwnerDogViewModel
+import com.soundbite.packt.db.OwnerDogViewModelFactory
+import com.soundbite.packt.db.UserDatabase
+import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.*
 
 /**
  * A simple [Fragment] subclass.
@@ -74,9 +75,7 @@ class HomeFragment : Fragment() {
 
         CoroutineScope(Dispatchers.IO).launch {
             addData()
-            //readData()
-
-
+            // readData()
         }
     }
 
@@ -143,17 +142,6 @@ class HomeFragment : Fragment() {
     }
 
     private suspend fun readData() {
-        ownerDogViewModel.getDogOwnerWithDogs().singleOrNull()?.let { dogOwnerWithDogs ->
-            val ownerName = dogOwnerWithDogs.dogOwner.name
-            val numDogs = dogOwnerWithDogs.dogs.size
-            val dogNames = dogOwnerWithDogs.dogs.joinToString { it.name }
-
-            Log.d("logz", "$ownerName has $numDogs named $dogNames")
-
-            withContext(Dispatchers.Main) {
-                //firebaseDataBase.child("users").child(dogOwnerWithDogs.dogOwner.ownerUid).setValue(dogOw)
-            }
-        }
     }
 
     private fun clearData(db: RoomDatabase) {
@@ -163,13 +151,12 @@ class HomeFragment : Fragment() {
     private fun addPostEventListener(postReference: DatabaseReference) {
         val postListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                //val post = snapshot.getValue<OwnerWithDogs>()
+                // val post = snapshot.getValue<OwnerWithDogs>()
             }
 
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
-
         }
     }
 
