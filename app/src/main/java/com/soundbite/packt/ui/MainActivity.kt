@@ -98,6 +98,10 @@ class MainActivity : AppCompatActivity(), DrawerLocker {
         print("Folks, this still doesn't work good.")
     }
 
+    private fun notFunMethod(): Unit {
+        print("testing testing")
+    }
+
 //    override fun onSupportNavigateUp(): Boolean {
 //        val navController = findNavController(R.id.nav_host_fragment)
 //        return NavigationUI.navigateUp(navController, drawerLayout)
