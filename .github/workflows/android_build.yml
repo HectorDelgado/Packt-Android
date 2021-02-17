@@ -8,19 +8,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Checkout codebase
       - name: Checkout
         uses: actions/checkout@v2
 
+      # Store DOG_API_KEY in build
       - name: Access API Key
         env:
           DOG_API_KEY: ${{ secrets.DOG_API_KEY }}
         run: echo DOGAPI_KEY=\"$DOG_API_KEY\" > secrets.properties
 
+      # Setup Java 8
       - name: Set Up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
 
+      # Restore Gradle Cache
       - name: Restore Cache
         uses: actions/cache@v2
         with:
@@ -31,20 +35,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      # Run Unit Test
       - name: Run Debug Tests
         run: ./gradlew testDebugUnitTest
 
+      # Run Kotlin Lint Check
       - name: Run Debug ktlint
         run: ./gradlew ktlintDebugCheck
 
+      # Run Lint Check
       - name: Run Debug Lint
         run: ./gradlew lintDebug
 
+      # Build APK
       - name: Build with Gradle
         run: ./gradlew build
 
+      # Upload APK Artifact
       - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
           name: app
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      # Remove some files from the Gradle cache
+      - name: Cleanup Gradle Cache
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties

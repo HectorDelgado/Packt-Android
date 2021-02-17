@@ -1,9 +1,6 @@
 package com.soundbite.packt.db
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.Relation
+import androidx.room.*
 
 /**
  * Defines the data model for a dog owner.
@@ -21,7 +18,8 @@ import androidx.room.Relation
 @Entity
 data class DogOwner(
     @PrimaryKey
-    val ownerUid: Int,
+    val ownerUid: String,
+    val dogUids: List<String>?,
     val created: Long,
     val username: String,
     val name: String,
@@ -49,9 +47,9 @@ data class DogOwner(
 @Entity
 data class Dog(
     @PrimaryKey
-    val dogUid: Int,
+    val dogUid: String,
+    val dogOwnerUid: String,
     val dogBreedId: Int,
-    val dogOwnerUid: Int,
     val created: Long,
     val name: String,
     val bio: String,
@@ -62,17 +60,17 @@ data class Dog(
     val img: String? = null
 )
 
-/**
- * Defines a one-to-many relationship between a single DogOwner and zero or more Dogs.
- *
- * @param dogOwner The owner of the dog(s).
- * @param dogs The dog(s) owned by the user.
- */
-data class OwnerWithDogs(
-    @Embedded val dogOwner: DogOwner,
-    @Relation(
-        parentColumn = "ownerUid",
-        entityColumn = "dogOwnerUid"
-    )
-    val dogs: List<Dog>
-)
+///**
+// * Defines a one-to-many relationship between a single DogOwner and zero or more Dogs.
+// *
+// * @param dogOwner The owner of the dog(s).
+// * @param dogs The dog(s) owned by the user.
+// */
+//data class DogOwnerWithDogs(
+//    @Embedded val dogOwner: DogOwner,
+//    @Relation(
+//        parentColumn = "ownerUid",
+//        entityColumn = "dogOwnerUid"
+//    )
+//    val dogs: List<Dog>
+//)

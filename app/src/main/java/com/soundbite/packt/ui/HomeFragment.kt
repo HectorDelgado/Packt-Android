@@ -10,19 +10,23 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.room.RoomDatabase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding
-import com.soundbite.packt.db.Dog
-import com.soundbite.packt.db.DogOwner
-import com.soundbite.packt.db.OwnerDogDao
-import com.soundbite.packt.db.OwnerDogViewModel
-import com.soundbite.packt.db.OwnerDogViewModelFactory
-import com.soundbite.packt.db.UserDatabase
+import com.soundbite.packt.db.*
 import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 
 /**
  * A simple [Fragment] subclass.
@@ -39,6 +43,9 @@ class HomeFragment : Fragment() {
     }
     private val ownerDogViewModel: OwnerDogViewModel by viewModels {
         OwnerDogViewModelFactory(db.ownerDogDao())
+    }
+    private val firebaseDataBase by lazy {
+        Firebase.database.reference
     }
 
     override fun onCreateView(
@@ -66,82 +73,104 @@ class HomeFragment : Fragment() {
         Log.d("logz", "Looking through our db...")
 
         CoroutineScope(Dispatchers.IO).launch {
-            val fe = ownerDogViewModel.getOwnerAndDogs().singleOrNull()
-            Log.d("logz", "Found ${fe?.dogs?.size} dogs")
-            // addData(userDao)
-            // readData(userDao)
+            addData()
+            //readData()
+
+
         }
-
-        // ownerDogViewModel.getOwnerAndDogs().
     }
 
-    private suspend fun addData(dao: OwnerDogDao) {
-        val ownerUid = Random.nextInt(Int.MAX_VALUE)
-        val timestamp = System.currentTimeMillis() / 1000
+    private suspend fun addData() {
+        FirebaseAuth.getInstance().currentUser?.let { firebaseUser ->
+            val timeStamp = System.currentTimeMillis() / 1000
+            val userUid = firebaseUser.uid
 
-        val owner = DogOwner(
-            ownerUid,
-            timestamp,
-            "user1001",
-            "Madrigal Senegal",
-            "Berlin is a great place to visit",
-            1,
-            1,
-            1992
-        )
+            val dogs = listOf(
+                Dog(
+                    UUID.randomUUID().toString(),
+                    userUid,
+                    12158,
+                    timeStamp,
+                    "Jeffrey",
+                    "a bio",
+                    1,
+                    1,
+                    2018,
+                    "Great Dane"
+                ),
+                Dog(
+                    UUID.randomUUID().toString(),
+                    userUid,
+                    12151,
+                    timeStamp,
+                    "Fluffy",
+                    "a bio",
+                    1,
+                    1,
+                    2010,
+                    "Poodle"
+                ),
+                Dog(
+                    UUID.randomUUID().toString(),
+                    userUid,
+                    61211,
+                    timeStamp,
+                    "Phoenix",
+                    "a bio",
+                    1,
+                    1,
+                    2011,
+                    "Golden Retriever"
+                ),
+            )
 
-        dao.insertOwner(owner)
-        val dogs = listOf(
-            Dog(
-                Random.nextInt(Int.MAX_VALUE),
-                12158,
-                ownerUid,
-                timestamp,
-                "Jeffrey",
-                "a bio",
-                1,
-                1,
-                2018,
-                "Great Dane"
-            ),
-            Dog(
-                Random.nextInt(Int.MAX_VALUE),
-                12151,
-                ownerUid,
-                timestamp,
-                "Fluffy",
-                "a bio",
-                1,
-                1,
-                2010,
-                "Poodle"
-            ),
-            Dog(
-                Random.nextInt(Int.MAX_VALUE),
-                61211,
-                ownerUid,
-                timestamp,
-                "Phoenix",
-                "a bio",
-                1,
-                1,
-                2011,
-                "Golden Retriever"
-            ),
-        )
-        dao.insertDogs(dogs)
+            val dogIds = dogs.map { it.dogUid }
+
+            val owner = DogOwner(
+                firebaseUser.uid,
+                dogIds,
+                timeStamp,
+                "TrashUser1034",
+                firebaseUser.displayName ?: "default name",
+                "Berlin is a great place to visit anytime.",
+                6,
+                3,
+                1992,
+            )
+
+            ownerDogViewModel.insertDogOwnerAndDogs(owner, dogs)
+        }
     }
 
-    private suspend fun readData(dao: OwnerDogDao) {
-        val ownerWithDogs = dao.getOwnerAndDogs()
-        val name = ownerWithDogs.dogOwner.name
-        val dogs = ownerWithDogs.dogs.size
-        val dogNames = ownerWithDogs.dogs.joinToString { it.name }
-        Log.d("logz", "$name has $dogs dogs named $dogNames")
+    private suspend fun readData() {
+        ownerDogViewModel.getDogOwnerWithDogs().singleOrNull()?.let { dogOwnerWithDogs ->
+            val ownerName = dogOwnerWithDogs.dogOwner.name
+            val numDogs = dogOwnerWithDogs.dogs.size
+            val dogNames = dogOwnerWithDogs.dogs.joinToString { it.name }
+
+            Log.d("logz", "$ownerName has $numDogs named $dogNames")
+
+            withContext(Dispatchers.Main) {
+                //firebaseDataBase.child("users").child(dogOwnerWithDogs.dogOwner.ownerUid).setValue(dogOw)
+            }
+        }
     }
 
     private fun clearData(db: RoomDatabase) {
         db.clearAllTables()
+    }
+
+    private fun addPostEventListener(postReference: DatabaseReference) {
+        val postListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                //val post = snapshot.getValue<OwnerWithDogs>()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
