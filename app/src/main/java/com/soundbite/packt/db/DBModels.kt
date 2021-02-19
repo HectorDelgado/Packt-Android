@@ -22,6 +22,7 @@ data class DogOwner(
     val ownerUid: String,
     val dogUids: List<String>?,
     val created: Long,
+    val lastLogin: Long,
     val username: String,
     val name: String,
     val bio: String,
