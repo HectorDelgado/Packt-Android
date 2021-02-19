@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.room.RoomDatabase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -26,7 +25,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * A simple [Fragment] subclass.
@@ -72,44 +70,52 @@ class HomeFragment : Fragment() {
 
         Log.d("logz", "Looking through our db...")
 
-
-
         CoroutineScope(Dispatchers.IO).launch {
-            //clearData()
-            //addData()
-            //readData()
-            //newUser()
+            // clearData()
+            // addData()
+            // readData()
+            // newUser()
         }
     }
 
     private fun newUser() {
         val currentUser = FirebaseAuth.getInstance().currentUser!!
 
-        firebaseDataBase.child("users").child(currentUser.uid).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    Log.d("logz", "User exist")
-                } else {
-                    Log.d("logz", "user is new")
+        firebaseDataBase
+            .child("users")
+            .child(currentUser.uid)
+            .addListenerForSingleValueEvent(
+                object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            Log.d("logz", "User exist")
+                        } else {
+                            Log.d("logz", "user is new")
 
-                    CoroutineScope(Dispatchers.IO).launch {
-                        ownerDogViewModel.getDogOwner().singleOrNull()?.let { dogOwner ->
-                            ownerDogViewModel.getDogs().singleOrNull()?.let { dogs ->
-                                firebaseDataBase.child("users").child(currentUser.uid).setValue(dogOwner)
-                                dogs.forEach {
-                                    firebaseDataBase.child("dogs").child(it.dogUid).setValue(it)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                ownerDogViewModel.getDogOwner().singleOrNull()?.let { dogOwner ->
+                                    ownerDogViewModel.getDogs().singleOrNull()?.let { dogs ->
+                                        firebaseDataBase
+                                            .child("users")
+                                            .child(currentUser.uid)
+                                            .setValue(dogOwner)
+                                        dogs.forEach {
+                                            firebaseDataBase
+                                                .child("dogs")
+                                                .child(it.dogUid)
+                                                .setValue(it)
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
                 }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })
+            )
     }
 
     private suspend fun addData() {
@@ -128,7 +134,10 @@ class HomeFragment : Fragment() {
     private suspend fun readData() {
         ownerDogViewModel.getDogOwner().singleOrNull()?.let { dogOwner ->
             ownerDogViewModel.getDogs().singleOrNull()?.let { dogs ->
-                Log.d("logz", "${dogOwner.name} has ${dogs.size} dogs named ${dogs.map { it.name }}")
+                Log.d(
+                    "logz",
+                    "${dogOwner.name} has ${dogs.size} dogs named ${dogs.map { it.name }}"
+                )
             }
         }
     }
