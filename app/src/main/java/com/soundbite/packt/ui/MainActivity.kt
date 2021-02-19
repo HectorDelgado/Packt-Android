@@ -71,10 +71,6 @@ class MainActivity : AppCompatActivity(), DrawerLocker {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    fun pointlessFunc() {
-        // This is for testing
-    }
-
     override fun setDrawerEnabled(enabled: Boolean) {
         val lockMode = when (enabled) {
             true -> {
@@ -89,9 +85,4 @@ class MainActivity : AppCompatActivity(), DrawerLocker {
 
         drawerLayout.setDrawerLockMode(lockMode)
     }
-
-//    override fun onSupportNavigateUp(): Boolean {
-//        val navController = findNavController(R.id.nav_host_fragment)
-//        return NavigationUI.navigateUp(navController, drawerLayout)
-//    }
 }

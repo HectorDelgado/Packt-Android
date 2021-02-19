@@ -28,6 +28,7 @@ class InitialFragment : Fragment() {
         get() = _binding!!
     private val RC_SIGN_IN = 2001
     private val providers = arrayListOf(
+
         AuthUI.IdpConfig.EmailBuilder().build()
     )
 

@@ -13,21 +13,20 @@ import androidx.room.RoomDatabase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.soundbite.packt.MockDataCreator
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding
-import com.soundbite.packt.db.Dog
-import com.soundbite.packt.db.DogOwner
 import com.soundbite.packt.db.OwnerDogViewModel
 import com.soundbite.packt.db.OwnerDogViewModelFactory
 import com.soundbite.packt.db.UserDatabase
-import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * A simple [Fragment] subclass.
@@ -73,98 +72,72 @@ class HomeFragment : Fragment() {
 
         Log.d("logz", "Looking through our db...")
 
+
+
         CoroutineScope(Dispatchers.IO).launch {
-            addData()
-            // readData()
+            //clearData()
+            //addData()
+            //readData()
+            //newUser()
         }
+    }
+
+    private fun newUser() {
+        val currentUser = FirebaseAuth.getInstance().currentUser!!
+
+        firebaseDataBase.child("users").child(currentUser.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    Log.d("logz", "User exist")
+                } else {
+                    Log.d("logz", "user is new")
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        ownerDogViewModel.getDogOwner().singleOrNull()?.let { dogOwner ->
+                            ownerDogViewModel.getDogs().singleOrNull()?.let { dogs ->
+                                firebaseDataBase.child("users").child(currentUser.uid).setValue(dogOwner)
+                                dogs.forEach {
+                                    firebaseDataBase.child("dogs").child(it.dogUid).setValue(it)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     private suspend fun addData() {
         FirebaseAuth.getInstance().currentUser?.let { firebaseUser ->
             val timeStamp = System.currentTimeMillis() / 1000
             val userUid = firebaseUser.uid
+            val mockData = MockDataCreator(userUid, timeStamp)
 
-            val dogs = listOf(
-                Dog(
-                    UUID.randomUUID().toString(),
-                    userUid,
-                    12158,
-                    timeStamp,
-                    "Jeffrey",
-                    "a bio",
-                    1,
-                    1,
-                    2018,
-                    "Great Dane"
-                ),
-                Dog(
-                    UUID.randomUUID().toString(),
-                    userUid,
-                    12151,
-                    timeStamp,
-                    "Fluffy",
-                    "a bio",
-                    1,
-                    1,
-                    2010,
-                    "Poodle"
-                ),
-                Dog(
-                    UUID.randomUUID().toString(),
-                    userUid,
-                    61211,
-                    timeStamp,
-                    "Phoenix",
-                    "a bio",
-                    1,
-                    1,
-                    2011,
-                    "Golden Retriever"
-                ),
-            )
+            val dogs = mockData.dogs
+            val dogOwner = mockData.dogOwner
 
-            val dogIds = dogs.map { it.dogUid }
-
-            val owner = DogOwner(
-                firebaseUser.uid,
-                dogIds,
-                timeStamp,
-                "TrashUser1034",
-                firebaseUser.displayName ?: "default name",
-                "Berlin is a great place to visit anytime.",
-                6,
-                3,
-                1992,
-            )
-
-            ownerDogViewModel.insertDogOwnerAndDogs(owner, dogs)
+            ownerDogViewModel.insertDogOwnerAndDogs(dogOwner, dogs)
         }
     }
 
     private suspend fun readData() {
-    }
-
-    private fun clearData(db: RoomDatabase) {
-        db.clearAllTables()
-    }
-
-    private fun addPostEventListener(postReference: DatabaseReference) {
-        val postListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                // val post = snapshot.getValue<OwnerWithDogs>()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+        ownerDogViewModel.getDogOwner().singleOrNull()?.let { dogOwner ->
+            ownerDogViewModel.getDogs().singleOrNull()?.let { dogs ->
+                Log.d("logz", "${dogOwner.name} has ${dogs.size} dogs named ${dogs.map { it.name }}")
             }
         }
+    }
+
+    private fun clearData() {
+        db.clearAllTables()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.options_menu, menu)
     }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return NavigationUI.onNavDestinationSelected(item, requireView().findNavController())
-//    }
 }
