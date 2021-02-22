@@ -16,6 +16,7 @@ import com.soundbite.packt.R
 import com.soundbite.packt.databinding.ActivityMainBinding
 import com.soundbite.packt.domain.RetrofitServiceBuilder
 import com.soundbite.packt.network.DogApi
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), DrawerLocker {
 
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity(), DrawerLocker {
     private lateinit var toolbar: Toolbar
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+
+    private val TAG = "T-${javaClass.simpleName}"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +68,8 @@ class MainActivity : AppCompatActivity(), DrawerLocker {
 //            // Store results, use as necessary
 //            val allDogs = dogApiService.getAllDogs()
 //        }
+
+        Timber.tag(TAG).d("Testing in main")
     }
 
     override fun onSupportNavigateUp(): Boolean {

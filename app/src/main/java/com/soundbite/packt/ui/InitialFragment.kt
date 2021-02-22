@@ -3,7 +3,6 @@ package com.soundbite.packt.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.databinding.FragmentInitialBinding
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
@@ -28,9 +28,9 @@ class InitialFragment : Fragment() {
         get() = _binding!!
     private val RC_SIGN_IN = 2001
     private val providers = arrayListOf(
-
         AuthUI.IdpConfig.EmailBuilder().build()
     )
+    private val TAG = "T-${javaClass.simpleName}"
 
     private var _binding: FragmentInitialBinding? = null
     private var currentUser: FirebaseUser? = null
@@ -97,17 +97,17 @@ class InitialFragment : Fragment() {
 
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in/created account
-                Log.d("logz", "Signed in. Successfully!")
+                Timber.d("Signed in successfully")
                 findNavController()
                     .navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
             } else {
                 if (response == null) {
                     // User cancelled sign-in flow
-                    Log.d("logz", "Signed in cancelled")
+                    Timber.d("Sign in work flow cancelled")
                 } else {
-                    val error = response.error
-                    Log.e("logz", "Error in sign in occurred.")
-                    Log.e("logz", "Msg >> ${error?.message}")
+                    val errorMsg = response.error?.message
+                    Timber.e("Error occurred during sign in workflow.")
+                    Timber.e("Msg: $errorMsg")
                 }
             }
         }

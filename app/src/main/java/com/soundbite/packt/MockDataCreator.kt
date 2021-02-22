@@ -1,6 +1,5 @@
 package com.soundbite.packt
 
-import android.util.Log
 import com.soundbite.packt.db.Dog
 import com.soundbite.packt.db.DogOwner
 import java.util.UUID
@@ -101,7 +100,6 @@ class MockDataCreator(private val userUid: String, private val created: Long) {
             )
             dogUIDs.add(dogUid)
         }
-        Log.d("logz", "Created ${dogs.size} dogs")
 
         dogs.toList()
     }
