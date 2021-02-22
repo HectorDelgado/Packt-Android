@@ -3,6 +3,7 @@ package com.soundbite.packt
 import android.util.Log
 import com.soundbite.packt.db.Dog
 import com.soundbite.packt.db.DogOwner
+import timber.log.Timber
 import java.util.UUID
 import kotlin.random.Random
 
@@ -101,7 +102,6 @@ class MockDataCreator(private val userUid: String, private val created: Long) {
             )
             dogUIDs.add(dogUid)
         }
-        Log.d("logz", "Created ${dogs.size} dogs")
 
         dogs.toList()
     }

@@ -11,6 +11,7 @@ import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.model.EventResponse
 import com.soundbite.packt.util.singleValueEvent
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class RemoteDatabaseViewModel() : ViewModel() {
     /**
@@ -74,12 +75,12 @@ class RemoteDatabaseViewModel() : ViewModel() {
         return when (result) {
             is EventResponse.Cancelled -> {
                 val message = result.error.message
-                Log.d("logz", "Error: $message")
+                Timber.e("SingleValueEvent cancelled: $message")
                 false
             }
             is EventResponse.DataChanged -> {
                 val snapshot = result.snapshot
-                Log.d("logz", "snapshot exists: ${snapshot.exists()}")
+                Timber.e("Snapshot exists: ${snapshot.exists()}")
                 snapshot.exists()
             }
         }

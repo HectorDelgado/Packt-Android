@@ -27,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
@@ -37,6 +38,8 @@ import kotlinx.coroutines.launch
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
+
+    private val TAG = "T-${javaClass.simpleName}"
 
     private val db by lazy {
         UserDatabase.getInstance(requireContext().applicationContext)
@@ -72,8 +75,7 @@ class HomeFragment : Fragment() {
         // (requireActivity() as DrawerLocker).setDrawerEnabled(true)
 
         val userDao = db.ownerDogDao()
-
-        Log.d("logz", "Looking through our db...")
+        Timber.tag(TAG).d("onViewCreated")
 
         CoroutineScope(Dispatchers.IO).launch {
             // clearData()
@@ -86,81 +88,14 @@ class HomeFragment : Fragment() {
             val dogs = mockData.dogs
             val dogOwner = mockData.dogOwner
 
-            remoteDatabaseViewModel.addNewDataToServer("users", dogOwner.ownerUid, dogOwner) { isSuccess ->
-                Log.d("logz", "Wrote to server: $isSuccess")
-            }
-            dogs.forEach { dog ->
-                remoteDatabaseViewModel.addNewDataToServer("dogs", dog.dogUid, dog) { isSuccess ->
-                    Log.d("logz", "Wrote dog to server: $isSuccess")
-                }
-            }
-        }
-    }
-
-    private fun newUser() {
-        val currentUser = FirebaseAuth.getInstance().currentUser!!
-
-
-
-        firebaseDataBase
-            .child("users")
-            .child(currentUser.uid)
-            .addListenerForSingleValueEvent(
-                object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        if (snapshot.exists()) {
-                            Log.d("logz", "User exist")
-                        } else {
-                            Log.d("logz", "user is new")
-
-                            CoroutineScope(Dispatchers.IO).launch {
-
-                                ownerDogViewModel.getDogOwner().singleOrNull()?.let { dogOwner ->
-                                    ownerDogViewModel.getDogs().singleOrNull()?.let { dogs ->
-                                        firebaseDataBase
-                                            .child("users")
-                                            .child(currentUser.uid)
-                                            .setValue(dogOwner)
-                                        dogs.forEach {
-                                            firebaseDataBase
-                                                .child("dogs")
-                                                .child(it.dogUid)
-                                                .setValue(it)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
-                    }
-                }
-            )
-    }
-
-    private suspend fun addData() {
-        FirebaseAuth.getInstance().currentUser?.let { firebaseUser ->
-            val timeStamp = System.currentTimeMillis() / 1000
-            val userUid = firebaseUser.uid
-            val mockData = MockDataCreator(userUid, timeStamp)
-
-            val dogs = mockData.dogs
-            val dogOwner = mockData.dogOwner
-
-            ownerDogViewModel.insertDogOwnerAndDogs(dogOwner, dogs)
-        }
-    }
-
-    private suspend fun readData() {
-        ownerDogViewModel.getDogOwner().singleOrNull()?.let { dogOwner ->
-            ownerDogViewModel.getDogs().singleOrNull()?.let { dogs ->
-                Log.d(
-                    "logz",
-                    "${dogOwner.name} has ${dogs.size} dogs named ${dogs.map { it.name }}"
-                )
-            }
+//            remoteDatabaseViewModel.addNewDataToServer("users", dogOwner.ownerUid, dogOwner) { isSuccess ->
+//                Timber.tag("T-$className").d("Wrote dogOwner named ${dogOwner.name} to server: $isSuccess")
+//            }
+//            dogs.forEach { dog ->
+//                remoteDatabaseViewModel.addNewDataToServer("dogs", dog.dogUid, dog) { isSuccess ->
+//                    Timber.tag("T-$className").d("Wrote dog named ${dog.name} to server: $isSuccess")
+//                }
+//            }
         }
     }
 
