@@ -21,6 +21,8 @@ import com.soundbite.packt.databinding.FragmentHomeBinding
 import com.soundbite.packt.db.OwnerDogViewModel
 import com.soundbite.packt.db.OwnerDogViewModelFactory
 import com.soundbite.packt.db.UserDatabase
+import com.soundbite.packt.network.RemoteDataBaseViewModelFactory
+import com.soundbite.packt.network.RemoteDatabaseViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.singleOrNull
@@ -41,6 +43,9 @@ class HomeFragment : Fragment() {
     }
     private val ownerDogViewModel: OwnerDogViewModel by viewModels {
         OwnerDogViewModelFactory(db.ownerDogDao())
+    }
+    private val remoteDatabaseViewModel: RemoteDatabaseViewModel by viewModels {
+        RemoteDataBaseViewModelFactory()
     }
     private val firebaseDataBase by lazy {
         Firebase.database.reference
@@ -74,12 +79,28 @@ class HomeFragment : Fragment() {
             // clearData()
             // addData()
             // readData()
-            // newUser()
+             //newUser()
+            val timeStamp = System.currentTimeMillis() / 1000
+            val currentUser = FirebaseAuth.getInstance().currentUser!!
+            val mockData = MockDataCreator(currentUser.uid, timeStamp)
+            val dogs = mockData.dogs
+            val dogOwner = mockData.dogOwner
+
+            remoteDatabaseViewModel.addNewDataToServer("users", dogOwner.ownerUid, dogOwner) { isSuccess ->
+                Log.d("logz", "Wrote to server: $isSuccess")
+            }
+            dogs.forEach { dog ->
+                remoteDatabaseViewModel.addNewDataToServer("dogs", dog.dogUid, dog) { isSuccess ->
+                    Log.d("logz", "Wrote dog to server: $isSuccess")
+                }
+            }
         }
     }
 
     private fun newUser() {
         val currentUser = FirebaseAuth.getInstance().currentUser!!
+
+
 
         firebaseDataBase
             .child("users")
@@ -93,6 +114,7 @@ class HomeFragment : Fragment() {
                             Log.d("logz", "user is new")
 
                             CoroutineScope(Dispatchers.IO).launch {
+
                                 ownerDogViewModel.getDogOwner().singleOrNull()?.let { dogOwner ->
                                     ownerDogViewModel.getDogs().singleOrNull()?.let { dogs ->
                                         firebaseDataBase
