@@ -4,7 +4,7 @@ import android.app.Application
 import com.soundbite.packt.BuildConfig
 import timber.log.Timber
 
-class TimberPlanter : Application() {
+class ApplicationSetup : Application() {
     override fun onCreate() {
         super.onCreate()
 

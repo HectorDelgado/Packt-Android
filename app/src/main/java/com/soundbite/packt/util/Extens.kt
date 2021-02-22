@@ -15,14 +15,15 @@ import kotlin.coroutines.suspendCoroutine
  *
  * @return A SingleValueEventResponse which will hold either a [DatabaseError] or a [DataSnapshot].
  */
-suspend fun DatabaseReference.singleValueEvent(): SingleValueEventResponse = suspendCoroutine { continuation ->
-    val valueEventListener = object : ValueEventListener {
-        override fun onCancelled(error: DatabaseError) {
-            continuation.resume(SingleValueEventResponse.Cancelled(error))
+suspend fun DatabaseReference.singleValueEvent():
+    SingleValueEventResponse = suspendCoroutine { continuation ->
+        val valueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                continuation.resume(SingleValueEventResponse.Cancelled(error))
+            }
+            override fun onDataChange(snapshot: DataSnapshot) {
+                continuation.resume(SingleValueEventResponse.DataChanged(snapshot))
+            }
         }
-        override fun onDataChange(snapshot: DataSnapshot) {
-            continuation.resume(SingleValueEventResponse.DataChanged(snapshot))
-        }
+        addListenerForSingleValueEvent(valueEventListener)
     }
-    addListenerForSingleValueEvent(valueEventListener)
-}

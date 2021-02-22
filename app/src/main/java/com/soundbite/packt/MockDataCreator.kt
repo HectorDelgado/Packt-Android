@@ -1,9 +1,7 @@
 package com.soundbite.packt
 
-import android.util.Log
 import com.soundbite.packt.db.Dog
 import com.soundbite.packt.db.DogOwner
-import timber.log.Timber
 import java.util.UUID
 import kotlin.random.Random
 
