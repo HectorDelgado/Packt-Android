@@ -1,18 +1,19 @@
 package com.soundbite.packt.network
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.soundbite.packt.model.EventResponse
+import com.soundbite.packt.model.SingleValueEventResponse
 import com.soundbite.packt.util.singleValueEvent
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+/**
+ *
+ */
 class RemoteDatabaseViewModel() : ViewModel() {
     /**
      * A Reference to the Firebase Realtime database.
@@ -73,12 +74,12 @@ class RemoteDatabaseViewModel() : ViewModel() {
             .singleValueEvent()
 
         return when (result) {
-            is EventResponse.Cancelled -> {
+            is SingleValueEventResponse.Cancelled -> {
                 val message = result.error.message
                 Timber.e("SingleValueEvent cancelled: $message")
                 false
             }
-            is EventResponse.DataChanged -> {
+            is SingleValueEventResponse.DataChanged -> {
                 val snapshot = result.snapshot
                 Timber.e("Snapshot exists: ${snapshot.exists()}")
                 snapshot.exists()
