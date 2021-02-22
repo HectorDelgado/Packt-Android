@@ -113,8 +113,6 @@ class RemoteDatabaseViewModel() : ViewModel() {
                 isSuccess(false)
             }
     }
-
-
 }
 
 /**
