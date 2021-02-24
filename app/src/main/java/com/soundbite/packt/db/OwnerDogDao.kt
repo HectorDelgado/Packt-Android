@@ -12,18 +12,6 @@ import androidx.room.Update
  */
 @Dao
 interface OwnerDogDao {
-//    @Transaction
-//    @Query("SELECT * FROM DogOwner")
-//    suspend fun getOwnerAndDogs(): OwnerWithDogs
-
-//    @Transaction
-//    @Query("SELECT * FROM DogOwner")
-//    fun getAllData(): Flow<OwnerWithDogs>
-
-//    @Transaction
-//    @Query("SELECT * FROM DogOwner")
-//    suspend fun getDogOwnerAndDogs(): DogOwnerWithDogs
-
     @Query("SELECT * FROM DogOwner LIMIT 1")
     suspend fun getDogOwner(): DogOwner
 

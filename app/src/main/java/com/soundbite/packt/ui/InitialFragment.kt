@@ -1,48 +1,43 @@
 package com.soundbite.packt.ui
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.databinding.FragmentInitialBinding
+import com.soundbite.packt.domain.AuthResultContract
+import com.soundbite.packt.network.RemoteDataBaseViewModelFactory
+import com.soundbite.packt.network.RemoteDatabaseViewModel
 import timber.log.Timber
 
 /**
- * A simple [Fragment] subclass.
- * Use the [InitialFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Initial landing fragment for all users. This fragment is used to authenticate the current user.
+ * If no user is singed in we start an Intent for the AuthUI builder. After authentication has
+ * passed we redirect the user to the home page.
  */
 
 class InitialFragment : Fragment() {
     private val binding
         get() = _binding!!
-    private val RC_SIGN_IN = 2001
-    private val providers = arrayListOf(
-        AuthUI.IdpConfig.EmailBuilder().build()
-    )
+
+    private val remoteDatabaseViewModel: RemoteDatabaseViewModel by viewModels {
+        RemoteDataBaseViewModelFactory()
+    }
+
+    // Registers AuthResultContract to start an AuthUI Activity for a result.
+    private val authResultLauncher =
+        registerForActivityResult(AuthResultContract()) { idpResponse ->
+            handleAuthResponse(idpResponse)
+        }
+
     private val TAG = "T-${javaClass.simpleName}"
 
     private var _binding: FragmentInitialBinding? = null
-    private var currentUser: FirebaseUser? = null
-
-    private lateinit var auth: FirebaseAuth
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // Initialize Firebase Authorization
-        auth = Firebase.auth
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,65 +46,64 @@ class InitialFragment : Fragment() {
     ): View {
         // Initialize View Binding
         _binding = FragmentInitialBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // (requireActivity() as DrawerLocker).setDrawerEnabled(false)
+    /**
+     * Handles the result of AuthResultContract
+     */
+    private fun handleAuthResponse(idpResponse: IdpResponse?) {
+        when {
+            (idpResponse == null) -> {
+                // Handle Error
+                Timber.tag(TAG).d("User cancelled sign in flow.")
+                Toast.makeText(
+                    requireContext(),
+                    "Sign in cancelled.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            idpResponse.error != null -> {
+                Timber.tag(TAG).e("Error found in idpResponse. Error ${idpResponse.error}")
+                Toast.makeText(
+                    requireContext(),
+                    "Error occurred signing in.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            else -> {
+                // Handle sign in process
+                Timber.tag(TAG).d("Signed in successfully.")
+                Toast.makeText(
+                    requireContext(),
+                    "Signed in successfully",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
 
-        // auth.signOut()
-        currentUser = auth.currentUser
+        Timber.tag(TAG).d("onResume called")
 
-        if (currentUser != null) {
-            findNavController()
-                .navigate(
-                    InitialFragmentDirections.actionInitialFragmentToHomeFragment()
-                )
-        } else {
-            // Launch sign-in intent
-            startActivityForResult(
-                AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(providers)
-                    .build(),
-                RC_SIGN_IN
-            )
+        remoteDatabaseViewModel.currentUser.let {
+            if (it != null) {
+                Timber.tag(TAG).d("User is already signed in. Going home")
+                findNavController()
+                    .navigate(
+                        InitialFragmentDirections.actionInitialFragmentToHomeFragment()
+                    )
+            } else {
+                Timber.tag(TAG).d("User is not signed in. Starting AuthUI")
+                authResultLauncher.launch(AuthResultContract.REQUEST_CODE)
+            }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == RC_SIGN_IN) {
-            val response = IdpResponse.fromResultIntent(data)
-
-            if (resultCode == Activity.RESULT_OK) {
-                // Successfully signed in/created account
-                Timber.d("Signed in successfully")
-                findNavController()
-                    .navigate(InitialFragmentDirections.actionInitialFragmentToHomeFragment())
-            } else {
-                if (response == null) {
-                    // User cancelled sign-in flow
-                    Timber.d("Sign in work flow cancelled")
-                } else {
-                    val errorMsg = response.error?.message
-                    Timber.e("Error occurred during sign in workflow.")
-                    Timber.e("Msg: $errorMsg")
-                }
-            }
-        }
     }
 }

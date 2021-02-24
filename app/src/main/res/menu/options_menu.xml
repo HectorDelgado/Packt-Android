@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/optionsItem1"
-          android:title="Options Item 1" />
+    <item android:id="@+id/menu_signOut"
+          android:title="Sign Out" />
 
-    <item android:id="@+id/optionsItem2"
+    <item android:id="@+id/menu_item2"
           android:title="Options Item 2" />
 </menu>

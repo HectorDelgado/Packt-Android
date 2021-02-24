@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -91,5 +94,34 @@ class HomeFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.options_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_signOut -> {
+                Timber.tag(TAG).d("User is signing out.")
+
+                AuthUI.getInstance()
+                    .signOut(requireContext())
+                    .addOnSuccessListener {
+                        Timber.tag(TAG).d("User signed out successfully.")
+                        findNavController()
+                            .navigate(
+                                HomeFragmentDirections.actionHomeFragmentToInitialFragment()
+                            )
+                    }
+                    .addOnFailureListener {
+                        Timber.tag(TAG).e("Error signing out user.")
+                    }
+                true
+            }
+            R.id.menu_item2 -> {
+                Timber.tag(TAG).d("User clicked item 2")
+                true
+            }
+            else -> {
+                return super.onOptionsItemSelected(item)
+            }
+        }
     }
 }
