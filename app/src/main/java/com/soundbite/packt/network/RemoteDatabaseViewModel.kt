@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.model.SingleValueEventResponse
@@ -19,6 +21,10 @@ class RemoteDatabaseViewModel() : ViewModel() {
      * A Reference to the Firebase Realtime database.
      */
     private val remoteDataBase = Firebase.database.reference
+    private val auth = Firebase.auth
+
+    val currentUser: FirebaseUser?
+        get() = auth.currentUser
 
     /**
      * Adds data to the server at /path/uniqueIdentifier if it does not exist.

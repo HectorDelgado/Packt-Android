@@ -18,6 +18,10 @@ import com.soundbite.packt.domain.RetrofitServiceBuilder
 import com.soundbite.packt.network.DogApi
 import timber.log.Timber
 
+/**
+ * Main Activity for this application. This Activity is mainly used to setup the Toolbar,
+ * NavController, and DrawerLayout
+ */
 class MainActivity : AppCompatActivity(), DrawerLocker {
 
     private lateinit var binding: ActivityMainBinding
@@ -36,20 +40,7 @@ class MainActivity : AppCompatActivity(), DrawerLocker {
         val view = binding.root
         setContentView(view)
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-
-        drawerLayout = binding.drawerLayout
-        toolbar = binding.toolBar
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.homeFragment,
-                R.id.initialFragment
-            ),
-            drawerLayout
-        )
-        navigationView = binding.navView
+        initializeComponents()
 
         setSupportActionBar(toolbar)
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
@@ -89,5 +80,24 @@ class MainActivity : AppCompatActivity(), DrawerLocker {
         }
 
         drawerLayout.setDrawerLockMode(lockMode)
+    }
+
+    /**
+     * Initializes the basic components needed for this Activity.
+     */
+    private fun initializeComponents() {
+        drawerLayout = binding.drawerLayout
+        navigationView = binding.navView
+        toolbar = binding.toolBar
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.homeFragment,
+                R.id.initialFragment
+            ),
+            drawerLayout
+        )
     }
 }

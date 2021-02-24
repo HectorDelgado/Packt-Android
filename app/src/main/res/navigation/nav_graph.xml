@@ -17,5 +17,11 @@
         android:id="@+id/homeFragment"
         android:name="com.soundbite.packt.ui.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_initialFragment"
+            app:destination="@id/initialFragment"
+            app:popUpTo="@id/initialFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
