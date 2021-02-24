@@ -79,7 +79,6 @@ class InitialFragment : Fragment() {
                     "Signed in successfully",
                     Toast.LENGTH_LONG
                 ).show()
-                // remoteDatabaseViewModel.updateUserStatus()
             }
         }
     }
