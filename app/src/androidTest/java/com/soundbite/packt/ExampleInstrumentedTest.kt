@@ -1,6 +1,5 @@
 package com.soundbite.packt
 
-import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -10,19 +9,15 @@ import com.soundbite.packt.db.OwnerDogDao
 import com.soundbite.packt.db.OwnerDogViewModel
 import com.soundbite.packt.db.OwnerDogViewModelFactory
 import com.soundbite.packt.db.UserDatabase
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
-import java.util.*
+import java.util.UUID
 import kotlin.jvm.Throws
 
 /**
@@ -110,6 +105,7 @@ class ExampleInstrumentedTest {
             System.currentTimeMillis() / 1000,
             "JENKINS1073",
             "Joaquin",
+            "Delgado",
             "I have no dogs",
             6,
             3,
@@ -122,8 +118,6 @@ class ExampleInstrumentedTest {
         assertEquals("JENKINS1073", result.username)
         db.clearAllTables()
     }
-
-
 
     @Test
     fun userDatabase_addDogs_sizeMatches() = runBlocking {
