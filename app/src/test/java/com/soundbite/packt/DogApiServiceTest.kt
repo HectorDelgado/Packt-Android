@@ -3,12 +3,9 @@ package com.soundbite.packt
 import com.soundbite.packt.domain.RetrofitServiceBuilder
 import com.soundbite.packt.model.DogBreed
 import com.soundbite.packt.network.DogApi
-import kotlinx.coroutines.runBlocking
-import org.junit.Rule
-import org.junit.Test
-import org.junit.rules.ExpectedException
 import java.lang.IllegalStateException
-import java.net.UnknownHostException
+import kotlinx.coroutines.runBlocking
+import org.junit.Test
 
 class DogApiServiceTest {
     private val baseUrl = "https://api.thedogapi.com/v1/"
