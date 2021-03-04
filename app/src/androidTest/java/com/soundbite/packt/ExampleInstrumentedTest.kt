@@ -9,11 +9,11 @@ import com.soundbite.packt.db.OwnerDogDao
 import com.soundbite.packt.db.OwnerDogViewModel
 import com.soundbite.packt.db.OwnerDogViewModelFactory
 import com.soundbite.packt.db.UserDatabase
+import java.io.IOException
+import java.util.UUID
 import kotlin.jvm.Throws
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
-import java.io.IOException
-import java.util.UUID
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
