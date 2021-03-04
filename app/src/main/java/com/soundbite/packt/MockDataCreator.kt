@@ -86,7 +86,6 @@ class MockDataCreator(private val userUid: String, private val created: Long) {
             dogs.add(
                 Dog(
                     dogUid,
-                    userUid,
                     generateBreedID(),
                     created,
                     getDogName(),
@@ -95,6 +94,9 @@ class MockDataCreator(private val userUid: String, private val created: Long) {
                     generateBirthMonth(),
                     generateBirthYear(),
                     "A Dog Breed",
+                    14.5,
+                    23.5,
+                    "Male",
                     null
                 )
             )
@@ -110,6 +112,7 @@ class MockDataCreator(private val userUid: String, private val created: Long) {
             dogUIDs,
             created,
             created,
+            getDogName(),
             getDogName(),
             getDogName(),
             getBio(),

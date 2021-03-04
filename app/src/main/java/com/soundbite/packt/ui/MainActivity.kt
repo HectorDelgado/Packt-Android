@@ -14,8 +14,6 @@ import com.google.android.material.navigation.NavigationView
 import com.soundbite.packt.DrawerLocker
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.ActivityMainBinding
-import com.soundbite.packt.domain.RetrofitServiceBuilder
-import com.soundbite.packt.network.DogApi
 import timber.log.Timber
 
 /**
@@ -48,10 +46,10 @@ class MainActivity : AppCompatActivity(), DrawerLocker {
 
         // How to use DogApi
         // Get instance of service builder, pass in base url
-        val serviceBuilder = RetrofitServiceBuilder.getInstance("https://api.thedogapi.com/v1/")
+        // val serviceBuilder = RetrofitServiceBuilder.getInstance("https://api.thedogapi.com/v1/")
 
         // Create service, pass in api interface class reference as param
-        val dogApiService = serviceBuilder.createService(DogApi::class.java)
+        // val dogApiService = serviceBuilder.createService(DogApi::class.java)
 
         // Retrieve results in coroutine scope
         // Should run in IO dispatcher

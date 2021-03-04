@@ -21,7 +21,6 @@ import androidx.room.PrimaryKey
 data class Dog(
     @PrimaryKey
     val uid: String,
-    val dogOwnerUID: String,
     val dogBreedId: Int,
     val created: Long,
     val name: String,
@@ -30,5 +29,8 @@ data class Dog(
     val birthMonth: Int,
     val birthYear: Int,
     val breed: String,
+    val weightInPounds: Double,
+    val weightInKilograms: Double,
+    val sex: String,
     val img: String? = null
 )

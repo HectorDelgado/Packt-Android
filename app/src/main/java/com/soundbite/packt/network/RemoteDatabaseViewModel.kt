@@ -73,7 +73,7 @@ class RemoteDatabaseViewModel() : ViewModel() {
      *
      * @return True if data exists, false otherwise.
      */
-    private suspend fun dataExistsOnServer(path: String, uniqueIdentifier: String): Boolean {
+    suspend fun dataExistsOnServer(path: String, uniqueIdentifier: String): Boolean {
         val result = remoteDataBase
             .child(path)
             .child(uniqueIdentifier)
