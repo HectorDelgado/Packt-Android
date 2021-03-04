@@ -29,9 +29,15 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     private var _birthMonth: Int = 0
     private var _birthYear: Int = 0
     private val _dogs = mutableListOf<Dog>()
-    private val nameForbiddenCharacters = Regex("[^a-zA-Z]")
-    private val usernameForbiddenCharacters =
-        Regex("^(?=.{8,20}\$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])\$")
+
+    // Regex for first/last name to only allow letters and spaces
+    private val nameRegex = Regex("^[a-zA-Z\\s]+$")
+    // Regex for username that only allows alphanumeric characters and underscores,
+    // but consecutive underscores and strings that begin or end with underscores are not allowed.
+    private val usernameRegex = Regex("^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*\$")
+
+//    private val usernameForbiddenCharacters =
+//        Regex("^(?=.{8,20}\$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])\$")
     private val calendar = Calendar.getInstance()
     private val birthDayRange: IntRange by lazy {
         IntRange(1, getMaxDay())
@@ -84,7 +90,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
 
     fun setFirstName(name: String, maxCharacters: Int, validationResult: (Result<String>) -> Unit) {
         Timber.tag(TAG).d("Entering setFistName")
-        validateStringField(name, maxCharacters, nameForbiddenCharacters) { result ->
+        validateStringField(name, maxCharacters, nameRegex) { result ->
             result.onSuccess {
                 Timber.tag(TAG).d("setFistName success")
                 _firstName = it
@@ -98,7 +104,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     }
 
     fun setLastName(name: String, maxCharacters: Int, validationResult: (Result<String>) -> Unit) {
-        validateStringField(name, maxCharacters, nameForbiddenCharacters) { result ->
+        validateStringField(name, maxCharacters, nameRegex) { result ->
             result.onSuccess {
                 _lastName = it
                 validationResult(Result.success(it))
@@ -111,7 +117,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
 
     fun setUsername(name: String, maxCharacters: Int, validationResult: (Result<String>) -> Unit) {
         Timber.tag(TAG).d("Enter setUsername!")
-        validateStringField(name, maxCharacters) { result ->
+        validateStringField(name, maxCharacters, usernameRegex) { result ->
             result.onSuccess {
                 Timber.tag(TAG).d("successful setUsername!")
                 _username = it
@@ -134,10 +140,6 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
                 validationResult(Result.failure(it))
             }
         }
-    }
-
-    fun addDog(dog: Dog) {
-        _dogs.add(dog)
     }
 
     /**
@@ -217,6 +219,10 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
         }
     }
 
+    fun addDog(dog: Dog) {
+        _dogs.add(dog)
+    }
+
     /**
      * Adds data to the Firebase realtime database at /path/uniqueIdentifier if it does not exist.
      *
@@ -278,13 +284,13 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
      *
      * @param field The field to be validated.
      * @param maxLength The maximum length for this field.
-     * @param forbiddenCharacters a Regex of characters that are not allowed in this field.
+     * @param regex a regular expression that the field must match.
      * @param result A lambda that passes the result of the validation.
      */
     private fun validateStringField(
         field: String,
         maxLength: Int,
-        forbiddenCharacters: Regex? = null,
+        regex: Regex? = null,
         result: (Result<String>) -> Unit
     ) {
         when {
@@ -298,9 +304,9 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
                     )
                 )
             }
-            forbiddenCharacters != null -> {
+            regex != null -> {
                 Timber.tag(TAG).d("forbid chars not null")
-                if (field.contains(forbiddenCharacters)) {
+                if (!field.contains(regex)) {
                     val lastChar = field.last()
                     result(Result.failure(ValidationError.IllegalCharacterError(lastChar)))
                 } else {
