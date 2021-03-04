@@ -14,6 +14,12 @@ class OwnerDogViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     fun getDogs(): Flow<List<Dog>> = flow {
         emit(ownerDogDao.getDogs())
     }
+    fun insertDogOwner(dogOwner: DogOwner) = viewModelScope.launch {
+        ownerDogDao.insertOwner(dogOwner)
+    }
+    fun insertDogs(dogs: List<Dog>) = viewModelScope.launch {
+        ownerDogDao.insertDogs(dogs)
+    }
     fun insertDogOwnerAndDogs(dogOwner: DogOwner, dogs: List<Dog>) = viewModelScope.launch {
         ownerDogDao.insertOwner(dogOwner)
         ownerDogDao.insertDogs(dogs)

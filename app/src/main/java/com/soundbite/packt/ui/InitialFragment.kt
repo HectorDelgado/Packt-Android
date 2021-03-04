@@ -10,9 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.firebase.ui.auth.IdpResponse
 import com.soundbite.packt.databinding.FragmentInitialBinding
+import com.soundbite.packt.db.UserDatabase
 import com.soundbite.packt.domain.AuthResultContract
-import com.soundbite.packt.network.RemoteDataBaseViewModelFactory
-import com.soundbite.packt.network.RemoteDatabaseViewModel
+import com.soundbite.packt.model.UserViewModel
+import com.soundbite.packt.model.UserViewModelFactory
 import timber.log.Timber
 
 /**
@@ -24,17 +25,17 @@ import timber.log.Timber
 class InitialFragment : Fragment() {
     private val binding
         get() = _binding!!
-
-    private val remoteDatabaseViewModel: RemoteDatabaseViewModel by viewModels {
-        RemoteDataBaseViewModelFactory()
+    private val db by lazy {
+        UserDatabase.getInstance(requireContext().applicationContext)
     }
-
+    private val userViewModel: UserViewModel by viewModels {
+        UserViewModelFactory(db.ownerDogDao())
+    }
     // Registers AuthResultContract to start an AuthUI Activity for a result.
     private val authResultLauncher =
         registerForActivityResult(AuthResultContract()) { idpResponse ->
             handleAuthResponse(idpResponse)
         }
-
     private val TAG = "T-${javaClass.simpleName}"
 
     private var _binding: FragmentInitialBinding? = null
@@ -86,9 +87,7 @@ class InitialFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        Timber.tag(TAG).d("onResume called")
-
-        remoteDatabaseViewModel.currentUser.let {
+        userViewModel.currentUser.let {
             if (it != null) {
                 Timber.tag(TAG).d("User is already signed in. Going home")
                 findNavController()

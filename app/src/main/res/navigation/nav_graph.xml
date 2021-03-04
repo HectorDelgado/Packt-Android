@@ -23,5 +23,28 @@
             app:destination="@id/initialFragment"
             app:popUpTo="@id/initialFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_homeFragment_to_newUserFragment"
+            app:destination="@id/newUserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newUserFragment"
+        android:name="com.soundbite.packt.ui.NewUserFragment"
+        android:label="fragment_new_user"
+        tools:layout="@layout/fragment_new_user" >
+        <action
+            android:id="@+id/action_newUserFragment_to_newDogsFragment"
+            app:destination="@id/newDogsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newDogsFragment"
+        android:name="com.soundbite.packt.NewDogsFragment"
+        android:label="fragment_new_dogs"
+        tools:layout="@layout/fragment_new_dogs" >
+        <action
+            android:id="@+id/action_newDogsFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="maxLength_firstName">20</integer>
+    <integer name="maxLength_lastName">20</integer>
+    <integer name="maxLength_userName">15</integer>
+    <integer name="maxLength_bio">255</integer>
+</resources>

@@ -7,23 +7,18 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import com.soundbite.packt.MockDataCreator
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding
-import com.soundbite.packt.db.OwnerDogViewModel
-import com.soundbite.packt.db.OwnerDogViewModelFactory
 import com.soundbite.packt.db.UserDatabase
-import com.soundbite.packt.network.RemoteDataBaseViewModelFactory
-import com.soundbite.packt.network.RemoteDatabaseViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.soundbite.packt.model.UserViewModel
+import com.soundbite.packt.model.UserViewModelFactory
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -34,35 +29,26 @@ import timber.log.Timber
  */
 
 class HomeFragment : Fragment() {
-
-    private lateinit var binding: FragmentHomeBinding
-
-    private val TAG = "T-${javaClass.simpleName}"
-
+    private val binding
+        get() = _binding!!
     private val db by lazy {
         UserDatabase.getInstance(requireContext().applicationContext)
     }
-    private val ownerDogViewModel: OwnerDogViewModel by viewModels {
-        OwnerDogViewModelFactory(db.ownerDogDao())
+    private val userViewModel: UserViewModel by viewModels {
+        UserViewModelFactory(db.ownerDogDao())
     }
-    private val remoteDatabaseViewModel: RemoteDatabaseViewModel by viewModels {
-        RemoteDataBaseViewModelFactory()
-    }
-    private val firebaseDataBase by lazy {
-        Firebase.database.reference
-    }
+    private val TAG = "T-${javaClass.simpleName}"
+
+    private var _binding: FragmentHomeBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
-        binding = FragmentHomeBinding.inflate(layoutInflater)
-        val view = binding.root
-
-        // Inflate the layout for this fragment
-        return view
+        _binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,26 +56,30 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        // (requireActivity() as DrawerLocker).setDrawerEnabled(true)
-
-        val userDao = db.ownerDogDao()
-        Timber.tag(TAG).d("onViewCreated")
-
-        CoroutineScope(Dispatchers.IO).launch {
-            // clearData()
-            // addData()
-            // readData()
-            // newUser()
-            val timeStamp = System.currentTimeMillis() / 1000
-            val currentUser = FirebaseAuth.getInstance().currentUser!!
-            val mockData = MockDataCreator(currentUser.uid, timeStamp)
-            val dogs = mockData.dogs
-            val dogOwner = mockData.dogOwner
+        userViewModel.currentUser?.let { user ->
+            lifecycleScope.launch {
+                val isUserNew = !userViewModel.dataExistsOnRemoteDatabase("users", user.uid)
+                if (isUserNew) {
+                    // TODO delay is just temporary for now
+                    delay(3000)
+                    findNavController()
+                        .navigate(
+                            HomeFragmentDirections.actionHomeFragmentToNewUserFragment()
+                        )
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Welcome back to packt!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 
-    private fun clearData() {
-        db.clearAllTables()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
