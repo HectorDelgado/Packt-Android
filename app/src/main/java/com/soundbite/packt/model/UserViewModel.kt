@@ -11,6 +11,8 @@ import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.db.Dog
 import com.soundbite.packt.db.DogOwner
 import com.soundbite.packt.db.OwnerDogDao
+import com.soundbite.packt.domain.RetrofitServiceBuilder
+import com.soundbite.packt.network.DogApi
 import com.soundbite.packt.util.ValidationError
 import com.soundbite.packt.util.singleValueEvent
 import java.text.DateFormatSymbols
@@ -32,12 +34,15 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
 
     // Regex for first/last name to only allow letters and spaces
     private val nameRegex = Regex("^[a-zA-Z\\s]+$")
-    // Regex for username that only allows alphanumeric characters and underscores,
-    // but consecutive underscores and strings that begin or end with underscores are not allowed.
+
+    // Regex for username that only allows alphanumeric characters
+    // and underscores, but consecutive underscores and strings
+    // that begin or end with underscores are not allowed.
     private val usernameRegex = Regex("^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*\$")
 
-//    private val usernameForbiddenCharacters =
-//        Regex("^(?=.{8,20}\$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])\$")
+    // Regex for bio that only allows alphanumeric characters, spaces and a period.
+    private val bioRegex = Regex("^[.a-zA-Z0-9\\s]+\$")
+
     private val calendar = Calendar.getInstance()
     private val birthDayRange: IntRange by lazy {
         IntRange(1, getMaxDay())
@@ -48,8 +53,22 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     private val birthYearRange: IntRange by lazy {
         IntRange(1950, getMaxYear())
     }
+
+    // Reference to the Firebase realtime database
     private val remoteDateBase = Firebase.database.reference
+
+    // Entry point of the Firebase authentication SDK
     private val auth = Firebase.auth
+
+    // Base URL for TheDogApi
+    private val dogApiBaseUrl = "https://api.thedogapi.com/v1/"
+
+    // Creates a single builder for instantiating our API
+    private val serviceBuilder = RetrofitServiceBuilder.getInstance(dogApiBaseUrl)
+
+    // Creates an implementation of the API endpoints defined by the interface
+    val dogApiService = serviceBuilder.createService(DogApi::class.java)
+
     private val TAG = "T-${javaClass.simpleName}"
 
     val currentUser: FirebaseUser?

@@ -44,20 +44,6 @@ class MainActivity : AppCompatActivity(), DrawerLocker {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(navigationView, navController)
 
-        // How to use DogApi
-        // Get instance of service builder, pass in base url
-        // val serviceBuilder = RetrofitServiceBuilder.getInstance("https://api.thedogapi.com/v1/")
-
-        // Create service, pass in api interface class reference as param
-        // val dogApiService = serviceBuilder.createService(DogApi::class.java)
-
-        // Retrieve results in coroutine scope
-        // Should run in IO dispatcher
-//        CoroutineScope(Dispatchers.IO).launch {
-//            // Store results, use as necessary
-//            val allDogs = dogApiService.getAllDogs()
-//        }
-
         Timber.tag(TAG).d("Testing in main")
     }
 
