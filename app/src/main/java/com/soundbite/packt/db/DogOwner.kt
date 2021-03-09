@@ -19,11 +19,10 @@ import androidx.room.PrimaryKey
 @Entity
 data class DogOwner(
     @PrimaryKey
-    val uid: String,
+    val username: String,
     val dogUIDs: List<String>?,
     val created: Long,
     val lastLogin: Long,
-    val username: String,
     val firstName: String,
     val lastName: String,
     val bio: String,

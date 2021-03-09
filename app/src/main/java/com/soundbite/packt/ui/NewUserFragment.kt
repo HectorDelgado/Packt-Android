@@ -22,6 +22,8 @@ import com.soundbite.packt.model.UserViewModelFactory
  * create an instance of this fragment.
  */
 class NewUserFragment : Fragment() {
+    private val TAG = "T-${javaClass.simpleName}"
+    private var _binding: FragmentNewUserBinding? = null
     private val binding
         get() = _binding!!
     private val db by lazy {
@@ -30,9 +32,6 @@ class NewUserFragment : Fragment() {
     private val userViewModel: UserViewModel by viewModels {
         UserViewModelFactory(db.ownerDogDao())
     }
-    private val TAG = "T-${javaClass.simpleName}"
-
-    private var _binding: FragmentNewUserBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,13 +50,15 @@ class NewUserFragment : Fragment() {
                 val firstName = it.toString()
                 val maxLength = resources.getInteger(R.integer.maxLength_firstName)
 
-                userViewModel.setFirstName(firstName, maxLength) { result ->
-                    result.onSuccess {
-                        binding.firstNameWarningTV.visibility = View.GONE
-                    }
-                    result.onFailure { err ->
-                        binding.firstNameWarningTV.visibility = View.VISIBLE
-                        displayMessage(err.message)
+                if (firstName.isNotEmpty()) {
+                    userViewModel.setFirstName(firstName, maxLength) { result ->
+                        result.onSuccess {
+                            binding.firstNameWarningTV.visibility = View.GONE
+                        }
+                        result.onFailure { err ->
+                            binding.firstNameWarningTV.visibility = View.VISIBLE
+                            displayMessage(err.message)
+                        }
                     }
                 }
             }
@@ -68,13 +69,15 @@ class NewUserFragment : Fragment() {
                 val lastName = it.toString()
                 val maxLength = resources.getInteger(R.integer.maxLength_lastName)
 
-                userViewModel.setLastName(lastName, maxLength) { result ->
-                    result.onSuccess {
-                        binding.lastNameWarningTV.visibility = View.GONE
-                    }
-                    result.onFailure { err ->
-                        binding.lastNameWarningTV.visibility = View.VISIBLE
-                        displayMessage(err.message)
+                if (lastName.isNotEmpty()) {
+                    userViewModel.setLastName(lastName, maxLength) { result ->
+                        result.onSuccess {
+                            binding.lastNameWarningTV.visibility = View.GONE
+                        }
+                        result.onFailure { err ->
+                            binding.lastNameWarningTV.visibility = View.VISIBLE
+                            displayMessage(err.message)
+                        }
                     }
                 }
             }
@@ -85,13 +88,15 @@ class NewUserFragment : Fragment() {
                 val userName = it.toString()
                 val maxLength = resources.getInteger(R.integer.maxLength_userName)
 
-                userViewModel.setUsername(userName, maxLength) { result ->
-                    result.onSuccess {
-                        binding.userNameWarningTV.visibility = View.GONE
-                    }
-                    result.onFailure { err ->
-                        binding.userNameWarningTV.visibility = View.VISIBLE
-                        displayMessage(err.message)
+                if (userName.isNotEmpty()) {
+                    userViewModel.setUsername(userName, maxLength) { result ->
+                        result.onSuccess {
+                            binding.userNameWarningTV.visibility = View.GONE
+                        }
+                        result.onFailure { err ->
+                            binding.userNameWarningTV.visibility = View.VISIBLE
+                            displayMessage(err.message)
+                        }
                     }
                 }
             }
@@ -105,19 +110,21 @@ class NewUserFragment : Fragment() {
 
                 binding.bioLengthTV.text = characterCount
 
-                userViewModel.setBio(bio, maxLength) { result ->
-                    result.onSuccess {
-                        binding.bioWarningTV.visibility = View.GONE
-                    }
-                    result.onFailure { err ->
-                        binding.bioWarningTV.visibility = View.VISIBLE
-                        displayMessage(err.message)
+                if (bio.isNotEmpty()) {
+                    userViewModel.setBio(bio, maxLength) { result ->
+                        result.onSuccess {
+                            binding.bioWarningTV.visibility = View.GONE
+                        }
+                        result.onFailure { err ->
+                            binding.bioWarningTV.visibility = View.VISIBLE
+                            displayMessage(err.message)
+                        }
                     }
                 }
             }
         }
 
-        val dateListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+        val dateListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             userViewModel.setDateOfBirth(dayOfMonth, month + 1, year) { result ->
                 result.onSuccess { date ->
                     binding.dateOfBirthWarningTV.visibility = View.GONE
@@ -137,10 +144,12 @@ class NewUserFragment : Fragment() {
         binding.nextPageBtn.setOnClickListener {
             userViewModel.buildUser { result ->
                 result.onSuccess { user ->
+                    // Store user data locally to retrieve later
+                    // check if username is assigned yet
                     userViewModel.insertDogOwner(user)
 
                     findNavController().navigate(
-                        NewUserFragmentDirections.actionNewUserFragmentToNewDogsFragment()
+                        NewUserFragmentDirections.actionNewUserFragmentToAllDogsFragment()
                     )
                 }
                 result.onFailure { err ->

@@ -14,13 +14,14 @@ import com.soundbite.packt.db.OwnerDogDao
 import com.soundbite.packt.domain.RetrofitServiceBuilder
 import com.soundbite.packt.network.DogApi
 import com.soundbite.packt.util.ValidationError
+import com.soundbite.packt.util.WeightConversions
 import com.soundbite.packt.util.singleValueEvent
 import java.text.DateFormatSymbols
-import java.util.Calendar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.*
 
 class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     private var _firstName: String = ""
@@ -30,6 +31,18 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     private var _birthDay: Int = 0
     private var _birthMonth: Int = 0
     private var _birthYear: Int = 0
+
+    private var dogName: String = ""
+    private var dogBreed: String = ""
+    private var dogBreedID: Int = 0
+    private var dogBirthDay: Int = 0
+    private var dogBirthMonth: Int = 0
+    private var dogBirthYear: Int = 0
+    private var dogWeightInPounds: Double = 0.0
+    private var dogWeightInKilograms: Double = 0.0
+    private var dogSex: String = ""
+    private var dogBio: String = ""
+
     private val _dogs = mutableListOf<Dog>()
 
     // Regex for first/last name to only allow letters and spaces
@@ -53,6 +66,10 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     private val birthYearRange: IntRange by lazy {
         IntRange(1950, getMaxYear())
     }
+    private val weightInPoundsLowerLimit = 1.0
+    private val weightInPoundsUpperLimit = 400.0
+    private val weightInKilogramsLowerLimit = 0.453592
+    private val weightInKilogramsUpperLimit = 181.437
 
     // Reference to the Firebase realtime database
     private val remoteDateBase = Firebase.database.reference
@@ -67,12 +84,12 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     private val serviceBuilder = RetrofitServiceBuilder.getInstance(dogApiBaseUrl)
 
     // Creates an implementation of the API endpoints defined by the interface
-    val dogApiService = serviceBuilder.createService(DogApi::class.java)
+    private val dogApiService = serviceBuilder.createService(DogApi::class.java)
 
     private val TAG = "T-${javaClass.simpleName}"
 
     val currentUser: FirebaseUser?
-        get() = auth.currentUser
+        get() = FirebaseAuth.getInstance().currentUser
     val firstName: String
         get() = _firstName
     val lastName: String
@@ -99,6 +116,9 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     fun insertDogOwner(dogOwner: DogOwner) = viewModelScope.launch {
         ownerDogDao.insertOwner(dogOwner)
     }
+    fun insertDog(dog: Dog) = viewModelScope.launch {
+        ownerDogDao.insertDog(dog)
+    }
     fun insertDogs(dogs: List<Dog>) = viewModelScope.launch {
         ownerDogDao.insertDogs(dogs)
     }
@@ -106,6 +126,15 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
         ownerDogDao.insertOwner(dogOwner)
         ownerDogDao.insertDogs(dogs)
     }
+    fun clearDatabase(onCompletion: () -> Unit) = viewModelScope.launch {
+        ownerDogDao.deleteUser()
+        ownerDogDao.deleteAllDogs()
+        onCompletion()
+    }
+
+    ////////////////////////////
+    //  User field validation
+    ////////////////////////////
 
     fun setFirstName(name: String, maxCharacters: Int, validationResult: (Result<String>) -> Unit) {
         Timber.tag(TAG).d("Entering setFistName")
@@ -192,6 +221,145 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
         }
     }
 
+    ////////////////////////////
+    //  Dog field validation
+    ////////////////////////////
+
+    fun setDogName(
+        name: String,
+        maxCharacters: Int,
+        validationResult: (Result<String>) -> Unit
+    ) {
+        if (name.isNotEmpty()) {
+            validateStringField(name, maxCharacters, nameRegex) { result ->
+                result.onSuccess {
+                    dogName = it
+                    validationResult(Result.success(it))
+                }
+                result.onFailure {
+                    validationResult(Result.failure(it))
+                }
+            }
+        }
+    }
+
+    fun setDogBreed(
+        breed: String,
+        breedID: Int,
+        maxCharacters: Int,
+        validationResult: (Result<String>) -> Unit
+    ) {
+        validateStringField(breed, maxCharacters) { result ->
+            result.onSuccess {
+                dogBreed = it
+                dogBreedID = breedID
+                validationResult(Result.success(it))
+            }
+            result.onFailure {
+                validationResult(Result.failure(it))
+            }
+        }
+    }
+
+    fun setDogDateOfBirth(
+        day: Int,
+        month: Int,
+        year: Int,
+        validationResult: (Result<String>) -> Unit
+    ) {
+        // TODO create a date validation method
+        if (day in birthDayRange && month in birthMonthRange && year in birthYearRange) {
+            val formattedDate = "${"%02d".format(day)}/${"%02d".format(month)}/${"%04d".format(year)}"
+            dogBirthDay = day
+            dogBirthMonth = month
+            dogBirthYear = year
+            validationResult(Result.success(formattedDate))
+        } else {
+            val minDate = "${DateFormatSymbols().months[birthMonthRange.first - 1]} " +
+                    "${birthDayRange.first}, ${birthYearRange.first}"
+            val maxDate = "${DateFormatSymbols().months[birthMonthRange.last - 1]} " +
+                    "${birthDayRange.last} ${birthYearRange.last}"
+            validationResult(Result.failure(ValidationError.DateOutOfRangeError(minDate, maxDate)))
+        }
+    }
+
+    fun setDogWeight(
+        weight: Double,
+        inPounds: Boolean,
+        validationResult: (Result<Double>) -> Unit
+    ) {
+        validateDoubleField(weight, 0.0, 400.0) { result ->
+            result.onSuccess {
+                when (inPounds) {
+                    true -> {
+                        dogWeightInPounds = weight
+                        dogWeightInKilograms = WeightConversions.poundsToKilograms(weight)
+                    }
+                    false -> {
+                        dogWeightInKilograms = weight
+                        dogWeightInPounds = WeightConversions.kilogramsToPounds(weight)
+                    }
+                }
+                validationResult(Result.success(it))
+            }
+            result.onFailure {
+                validationResult(Result.failure(it))
+            }
+        }
+    }
+
+    fun setDogWeightInPounds(
+        weight: Double,
+        validationResult: (Result<Double>) -> Unit
+    ) {
+        validateDoubleField(weight, weightInPoundsLowerLimit, weightInPoundsUpperLimit) { result ->
+            result.onSuccess {
+                dogWeightInPounds = it
+                dogWeightInKilograms = WeightConversions.poundsToKilograms(weight)
+                validationResult(Result.success(it))
+            }
+            result.onFailure {
+                validationResult(Result.failure(it))
+            }
+        }
+    }
+
+    fun setDogWeightInKilograms(
+        weight: Double,
+        validationResult: (Result<Double>) -> Unit
+    ) {
+        validateDoubleField(weight, weightInKilogramsLowerLimit, weightInKilogramsUpperLimit) { result ->
+            result.onSuccess {
+                dogWeightInKilograms = it
+                dogWeightInPounds = WeightConversions.kilogramsToPounds(weight)
+                validationResult(Result.success(it))
+            }
+            result.onFailure {
+                validationResult(Result.failure(it))
+            }
+        }
+    }
+
+    fun setDogSex(sex: String) {
+        dogSex = sex
+    }
+
+    fun setDogBio(bio: String, maxCharacters: Int, validationResult: (Result<String>) -> Unit) {
+        validateStringField(bio, maxCharacters, bioRegex) { result ->
+            result.onSuccess {
+                dogBio = it
+                validationResult(Result.success(it))
+            }
+            result.onFailure {
+                validationResult(Result.failure(it))
+            }
+        }
+    }
+
+    ////////////////////////////
+    //  Builders
+    ////////////////////////////
+
     fun buildUser(result: (Result<DogOwner>) -> Unit) {
         when {
             currentUser == null -> {
@@ -219,11 +387,10 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
                 result(
                     Result.success(
                         DogOwner(
-                            currentUser!!.uid,
+                            _username,
                             null,
                             System.currentTimeMillis() / 1000,
                             System.currentTimeMillis() / 1000,
-                            _username,
                             _firstName,
                             _lastName,
                             _bio,
@@ -238,8 +405,59 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
         }
     }
 
+    fun buildDog(result: (Result<Dog>) -> Unit) {
+        when {
+            dogName.isEmpty() -> {
+                result(Result.failure(ValidationError.MissingFieldError("Name")))
+            }
+            dogBreedID == 0 || dogBreed.isEmpty() -> {
+                result(Result.failure(ValidationError.MissingFieldError("Breed")))
+            }
+            dogBirthDay !in birthDayRange || dogBirthMonth !in birthMonthRange || dogBirthYear !in birthYearRange -> {
+                result(Result.failure(ValidationError.MissingFieldError("Date of Birth")))
+            }
+            dogWeightInPounds !in weightInPoundsLowerLimit..weightInPoundsUpperLimit
+                    || dogWeightInKilograms !in weightInKilogramsLowerLimit..weightInKilogramsUpperLimit -> {
+                result(Result.failure(ValidationError.MissingFieldError("Weight")))
+            }
+            dogSex.isEmpty() -> {
+                result(Result.failure(ValidationError.MissingFieldError("Sex")))
+            }
+            dogBio.isEmpty() -> {
+                result(Result.failure(ValidationError.MissingFieldError("Bio")))
+            }
+            else -> {
+                result(
+                    Result.success(
+                        Dog(
+                            UUID.randomUUID().toString(),
+                            dogBreedID,
+                            System.currentTimeMillis() / 1000,
+                            dogName,
+                            dogBio,
+                            dogBirthDay,
+                            dogBirthMonth,
+                            dogBirthYear,
+                            dogBreed,
+                            dogWeightInPounds,
+                            dogWeightInKilograms,
+                            dogSex
+                        )
+                    )
+                )
+            }
+        }
+    }
+
     fun addDog(dog: Dog) {
         _dogs.add(dog)
+    }
+
+    ////////////////////////////
+    //  The Dog API service
+    ////////////////////////////
+    suspend fun getDogBreeds(): List<DogBreed> {
+        return dogApiService.getAllDogs()
     }
 
     /**
@@ -290,11 +508,16 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
         }
     }
 
-    private fun validateNumberField(field: Int, range: IntRange, result: (Result<Int>) -> Unit) {
-        if (field in range) {
+    private fun validateDoubleField(
+        field: Double,
+        lowerLimit: Double,
+        upperLimit: Double,
+        result: (Result<Double>) -> Unit
+    ) {
+        if (field in lowerLimit..upperLimit) {
             result(Result.success(field))
         } else {
-            result(Result.failure(ValidationError.OutOfRangeError(range.first, range.last)))
+            result(Result.failure(ValidationError.OutOfRangeError(lowerLimit, upperLimit)))
         }
     }
 

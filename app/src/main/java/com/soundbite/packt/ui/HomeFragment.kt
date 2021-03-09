@@ -19,6 +19,8 @@ import com.soundbite.packt.db.UserDatabase
 import com.soundbite.packt.model.UserViewModel
 import com.soundbite.packt.model.UserViewModelFactory
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -29,17 +31,19 @@ import timber.log.Timber
  */
 
 class HomeFragment : Fragment() {
+    private val TAG = "T-${javaClass.simpleName}"
+    private var _binding: FragmentHomeBinding? = null
     private val binding
         get() = _binding!!
+
     private val db by lazy {
         UserDatabase.getInstance(requireContext().applicationContext)
     }
     private val userViewModel: UserViewModel by viewModels {
         UserViewModelFactory(db.ownerDogDao())
     }
-    private val TAG = "T-${javaClass.simpleName}"
 
-    private var _binding: FragmentHomeBinding? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,12 +60,19 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        userViewModel.currentUser?.let { user ->
-            lifecycleScope.launch {
-                val isUserNew = !userViewModel.dataExistsOnRemoteDatabase("users", user.uid)
+        lifecycleScope.launch {
+            // TODO Add firebase uid to DogOwner model!
+            val user = userViewModel.getDogOwner().singleOrNull()
+
+            if (user == null) {
+                findNavController()
+                    .navigate(
+                        HomeFragmentDirections.actionHomeFragmentToNewUserFragment()
+                    )
+            } else {
+                // User may not be logged in locally but may have data on server
+                val isUserNew = !userViewModel.dataExistsOnRemoteDatabase("users", user.username)
                 if (isUserNew) {
-                    // TODO delay is just temporary for now
-                    delay(3000)
                     findNavController()
                         .navigate(
                             HomeFragmentDirections.actionHomeFragmentToNewUserFragment()
@@ -69,7 +80,7 @@ class HomeFragment : Fragment() {
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        "Welcome back to packt!",
+                        "Welcome back to packt ${user.username}!",
                         Toast.LENGTH_LONG
                     ).show()
                 }

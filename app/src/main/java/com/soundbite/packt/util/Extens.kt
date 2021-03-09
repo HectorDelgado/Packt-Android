@@ -7,6 +7,7 @@ import com.google.firebase.database.ValueEventListener
 import com.soundbite.packt.model.SingleValueEventResponse
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.round
 
 /**
  * Extension function for executing a [ValueEventListener] in a continuation block.
@@ -27,3 +28,16 @@ suspend fun DatabaseReference.singleValueEvent():
         }
         addListenerForSingleValueEvent(valueEventListener)
     }
+
+/**
+ * Rounds a Double value to a certain number of decimal points.
+ *
+ * @param decimals The number of decimals to round to.
+ *
+ * @return A Double value rounded.
+ */
+fun Double.roundTo(decimals: Int): Double {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    return round(this * multiplier) / multiplier
+}

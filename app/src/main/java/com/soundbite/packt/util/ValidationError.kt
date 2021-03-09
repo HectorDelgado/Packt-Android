@@ -9,6 +9,6 @@ sealed class ValidationError(msg: String) : Throwable(msg) {
         ValidationError("Max characters allowed is $maxLength!")
     class MissingFieldError(fieldName: String) :
         ValidationError("Field $fieldName is required.")
-    class OutOfRangeError(minValue: Int, maxValue: Int) :
+    class OutOfRangeError(minValue: Number, maxValue: Number) :
         ValidationError("Value must be between $minValue and $maxValue!")
 }
