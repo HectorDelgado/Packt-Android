@@ -15,12 +15,10 @@ import androidx.navigation.fragment.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding
+import com.soundbite.packt.db.DogOwner
 import com.soundbite.packt.db.UserDatabase
 import com.soundbite.packt.model.UserViewModel
 import com.soundbite.packt.model.UserViewModelFactory
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -43,8 +41,6 @@ class HomeFragment : Fragment() {
         UserViewModelFactory(db.ownerDogDao())
     }
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,29 +56,20 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
+        // TODO Current user is not updated internally or new user is not detected!
         lifecycleScope.launch {
-            // TODO Add firebase uid to DogOwner model!
-            val user = userViewModel.getDogOwner().singleOrNull()
-
-            if (user == null) {
-                findNavController()
-                    .navigate(
-                        HomeFragmentDirections.actionHomeFragmentToNewUserFragment()
-                    )
-            } else {
-                // User may not be logged in locally but may have data on server
-                val isUserNew = !userViewModel.dataExistsOnRemoteDatabase("users", user.username)
-                if (isUserNew) {
+            userViewModel.currentUser?.let { fbUser ->
+                Timber.tag(TAG).d("User UID is ${fbUser.uid}")
+                if (userViewModel.isNewUser(fbUser.uid)) {
+                    Timber.tag(TAG).d("User not found in remote database")
                     findNavController()
                         .navigate(
                             HomeFragmentDirections.actionHomeFragmentToNewUserFragment()
                         )
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Welcome back to packt ${user.username}!",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Timber.tag(TAG).d("User found in remote database")
+                    val user = userViewModel.readDataFromDatabase(UserViewModel.DATABASE_PATH_USERS, fbUser.uid, DogOwner::class.java)
+                    binding.tempTV.text = "Welcome to Packt ${user?.username}"
                 }
             }
         }

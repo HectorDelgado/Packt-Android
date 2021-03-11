@@ -19,15 +19,18 @@ import androidx.room.PrimaryKey
 @Entity
 data class DogOwner(
     @PrimaryKey
+    val uid: String,
     val username: String,
-    val dogUIDs: List<String>?,
-    val created: Long,
-    val lastLogin: Long,
     val firstName: String,
     val lastName: String,
     val bio: String,
     val birthDay: Int,
     val birthMonth: Int,
     val birthYear: Int,
+    val dogUIDs: List<String>,
+    val created: Long,
+    val lastLogin: Long,
     val img: String? = null
-)
+) {
+    constructor() : this("", "", "", "", "", 0, 0, 0, emptyList(), 0, 0)
+}

@@ -24,6 +24,11 @@ import timber.log.Timber
 import java.util.*
 
 class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
+    companion object {
+        const val DATABASE_PATH_USERS   = "users"
+        const val DATABASE_PATH_DOGS    = "dogs"
+    }
+
     private var _firstName: String = ""
     private var _lastName: String = ""
     private var _username: String = ""
@@ -72,7 +77,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     private val weightInKilogramsUpperLimit = 181.437
 
     // Reference to the Firebase realtime database
-    private val remoteDateBase = Firebase.database.reference
+    val remoteDateBase = Firebase.database.reference
 
     // Entry point of the Firebase authentication SDK
     private val auth = Firebase.auth
@@ -107,6 +112,10 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     val dogs: List<Dog>
         get() = _dogs
 
+    ////////////////////////////
+    //  Room database operations
+    ////////////////////////////
+
     fun getDogOwner(): Flow<DogOwner> = flow {
         emit(ownerDogDao.getDogOwner())
     }
@@ -133,7 +142,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     }
 
     ////////////////////////////
-    //  User field validation
+    //  User validation
     ////////////////////////////
 
     fun setFirstName(name: String, maxCharacters: Int, validationResult: (Result<String>) -> Unit) {
@@ -222,7 +231,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     }
 
     ////////////////////////////
-    //  Dog field validation
+    //  Dog validation
     ////////////////////////////
 
     fun setDogName(
@@ -384,23 +393,26 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
                 result(Result.failure(ValidationError.MissingFieldError("birth year")))
             }
             else -> {
-                result(
-                    Result.success(
-                        DogOwner(
-                            _username,
-                            null,
-                            System.currentTimeMillis() / 1000,
-                            System.currentTimeMillis() / 1000,
-                            _firstName,
-                            _lastName,
-                            _bio,
-                            _birthDay,
-                            _birthMonth,
-                            _birthYear,
-                            null
+                currentUser?.also {
+                    result(
+                        Result.success(
+                            DogOwner(
+                                it.uid,
+                                _username,
+                                _firstName,
+                                _lastName,
+                                _bio,
+                                _birthDay,
+                                _birthMonth,
+                                _birthYear,
+                                _dogs.map { dog -> dog.uid },
+                                System.currentTimeMillis() / 1000,
+                                System.currentTimeMillis() / 1000,
+                                null
+                            )
                         )
                     )
-                )
+                }
             }
         }
     }
@@ -460,6 +472,10 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
         return dogApiService.getAllDogs()
     }
 
+    ////////////////////////////
+    //  Firebase database
+    ////////////////////////////
+
     /**
      * Adds data to the Firebase realtime database at /path/uniqueIdentifier if it does not exist.
      *
@@ -481,6 +497,34 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
         }
     }
 
+    suspend fun <T> readDataFromDatabase(
+        path: String,
+        uid: String,
+        clazz: Class<T>
+    ): T? {
+        val result = remoteDateBase
+            .child(path)
+            .child(uid)
+            .singleValueEvent()
+
+        return when (result) {
+            is SingleValueEventResponse.Cancelled -> {
+                val errorMsg = result.error.message
+                Timber.e(errorMsg)
+                null
+            }
+            is SingleValueEventResponse.DataChanged -> {
+                val snapshot = result.snapshot
+                val userData = snapshot.getValue(clazz)
+                userData
+            }
+        }
+    }
+
+    suspend fun isNewUser(uid: String): Boolean {
+        return !dataExistsOnRemoteDatabase(DATABASE_PATH_USERS, uid)
+    }
+
     /**
      * Checks to see if the specific data exists on the Firebase realtime database.
      *
@@ -489,7 +533,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
      *
      * @return True if data exists, false otherwise.
      */
-    suspend fun dataExistsOnRemoteDatabase(path: String, uniqueIdentifier: String): Boolean {
+    private suspend fun dataExistsOnRemoteDatabase(path: String, uniqueIdentifier: String): Boolean {
         val result = remoteDateBase
             .child(path)
             .child(uniqueIdentifier)

@@ -77,35 +77,33 @@ class AllDogsFragment : Fragment() {
         }
 
         binding.doneBtn.setOnClickListener {
-            Timber.tag(TAG).d("User is ready to be done.")
             CoroutineScope(Dispatchers.IO).launch {
                 val dogOwner = userViewModel.getDogOwner().single()
                 val dogs = userViewModel.getDogs().single()
 
-                Timber.tag(TAG).d("clearing database.")
                 userViewModel.clearDatabase {
-                    Timber.tag(TAG).d("Database clear.")
                     val user = DogOwner(
+                        userViewModel.currentUser!!.uid,
                         dogOwner.username,
-                        dogs.map { it.uid },
-                        dogOwner.created,
-                        dogOwner.lastLogin,
                         dogOwner.firstName,
                         dogOwner.lastName,
                         dogOwner.bio,
                         dogOwner.birthDay,
                         dogOwner.birthMonth,
                         dogOwner.birthYear,
+                        dogs.map { it.uid },
+                        dogOwner.created,
+                        dogOwner.lastLogin,
                         dogOwner.img
                     )
                     Timber.tag(TAG).d("Inserting new data!")
                     userViewModel.insertDogOwner(user)
                     userViewModel.insertDogs(dogs)
-                    userViewModel.addNewDataToRemoteDatabase("users", user.username, user) { isSuccess ->
+                    userViewModel.addNewDataToRemoteDatabase(UserViewModel.DATABASE_PATH_USERS, user.uid, user) { isSuccess ->
                         if (isSuccess) {
                             Timber.tag(TAG).d("User wrote to firebase.")
                             dogs.forEach { dog ->
-                                userViewModel.addNewDataToRemoteDatabase("dogs", dog.uid, dog) { isSuccess ->
+                                userViewModel.addNewDataToRemoteDatabase(UserViewModel.DATABASE_PATH_DOGS, dog.uid, dog) { isSuccess ->
                                     Timber.tag(TAG).d("Dog wrote to firebase.")
                                 }
                             }
