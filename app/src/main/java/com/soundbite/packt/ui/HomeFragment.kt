@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -68,7 +67,11 @@ class HomeFragment : Fragment() {
                         )
                 } else {
                     Timber.tag(TAG).d("User found in remote database")
-                    val user = userViewModel.readDataFromDatabase(UserViewModel.DATABASE_PATH_USERS, fbUser.uid, DogOwner::class.java)
+                    val user = userViewModel.readDataFromDatabase(
+                        UserViewModel.DATABASE_PATH_USERS,
+                        fbUser.uid,
+                        DogOwner::class.java
+                    )
                     binding.tempTV.text = "Welcome to Packt ${user?.username}"
                 }
             }

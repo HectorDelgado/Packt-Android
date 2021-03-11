@@ -22,7 +22,7 @@ class DogUIDConverter {
 //    }
 
     @TypeConverter
-    fun uidListToStringNonNull(uids: List<String>): String {
+    fun uidListToString(uids: List<String>): String {
         return if (uids.isEmpty()) {
             ""
         } else {
@@ -31,7 +31,7 @@ class DogUIDConverter {
     }
 
     @TypeConverter
-    fun stringToUidListgNonNull(str: String): List<String> {
+    fun stringToUidList(str: String): List<String> {
         return if (str.isEmpty()) {
             emptyList()
         } else {

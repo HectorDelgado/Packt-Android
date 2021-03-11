@@ -43,11 +43,11 @@ class UIDConverterTest {
         assertEquals(uuidsAsString, actual)
     }
 
-    @Test
-    fun uidListToString_nullListToNullString_pass() {
-        val actual = converter.uidListToString(null)
-        assertEquals(null, actual)
-    }
+//    @Test
+//    fun uidListToString_nullListToNullString_pass() {
+//        val actual = converter.uidListToString(null)
+//        assertEquals(null, actual)
+//    }
 
     @Test
     fun uidListToString_emptyListToNothing_throwException() {
@@ -61,11 +61,11 @@ class UIDConverterTest {
         assertEquals(uuidsAsList, actual)
     }
 
-    @Test
-    fun stringToUidList_nullStringToNullList_pass() {
-        val actual = converter.stringToUidList(null)
-        assertEquals(null, actual)
-    }
+//    @Test
+//    fun stringToUidList_nullStringToNullList_pass() {
+//        val actual = converter.stringToUidList(null)
+//        assertEquals(null, actual)
+//    }
 
     @Test
     fun stringToUidList_emptyStringToNothing_throwException() {

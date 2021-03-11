@@ -50,7 +50,6 @@ class NewDogFragment : Fragment() {
             val maxChars = resources.getInteger(R.integer.maxLength_firstName)
             userViewModel.setDogBreed(dogBreed, dogBreedID, maxChars) { result ->
                 result.onSuccess {
-
                 }
                 result.onFailure { err ->
                     displayMessage(err.message)
@@ -93,7 +92,6 @@ class NewDogFragment : Fragment() {
                 if (dogName.isNotEmpty()) {
                     userViewModel.setDogName(dogName, maxChars) { result ->
                         result.onSuccess {
-
                         }
                         result.onFailure { err ->
                             displayMessage(err.message)
@@ -132,7 +130,6 @@ class NewDogFragment : Fragment() {
                     val parsedWeight = originalWeight.toDouble()
                     userViewModel.setDogWeight(parsedWeight, weightInPounds) { result ->
                         result.onSuccess {
-
                         }
                         result.onFailure { err ->
                             displayMessage(err.message)
@@ -152,7 +149,6 @@ class NewDogFragment : Fragment() {
                     userViewModel.setDogSex("Female")
                 }
                 else -> {
-
                 }
             }
         }
@@ -163,7 +159,6 @@ class NewDogFragment : Fragment() {
                 val maxChars = resources.getInteger(R.integer.maxLength_bio)
                 userViewModel.setDogBio(bio, maxChars) { result ->
                     result.onSuccess {
-
                     }
                     result.onFailure { err ->
                         displayMessage(err.message)
@@ -177,7 +172,9 @@ class NewDogFragment : Fragment() {
                 result.onSuccess {
                     userViewModel.insertDog(it)
 
-                    findNavController().navigate(NewDogFragmentDirections.actionNewDogsFragmentToAllDogsFragment())
+                    findNavController().navigate(
+                        NewDogFragmentDirections.actionNewDogsFragmentToAllDogsFragment()
+                    )
                 }
                 result.onFailure {
                     Toast.makeText(requireContext(), "Err: ${it.message}", Toast.LENGTH_LONG).show()

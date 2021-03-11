@@ -1,15 +1,14 @@
 package com.soundbite.packt.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.soundbite.packt.ui.AllDogsFragmentDirections
 import com.soundbite.packt.adapter.DogBriefAdapter
 import com.soundbite.packt.databinding.FragmentAllDogsBinding
 import com.soundbite.packt.db.DogOwner
@@ -99,11 +98,19 @@ class AllDogsFragment : Fragment() {
                     Timber.tag(TAG).d("Inserting new data!")
                     userViewModel.insertDogOwner(user)
                     userViewModel.insertDogs(dogs)
-                    userViewModel.addNewDataToRemoteDatabase(UserViewModel.DATABASE_PATH_USERS, user.uid, user) { isSuccess ->
+                    userViewModel.addNewDataToRemoteDatabase(
+                        UserViewModel.DATABASE_PATH_USERS,
+                        user.uid,
+                        user
+                    ) { isSuccess ->
                         if (isSuccess) {
                             Timber.tag(TAG).d("User wrote to firebase.")
                             dogs.forEach { dog ->
-                                userViewModel.addNewDataToRemoteDatabase(UserViewModel.DATABASE_PATH_DOGS, dog.uid, dog) { isSuccess ->
+                                userViewModel.addNewDataToRemoteDatabase(
+                                    UserViewModel.DATABASE_PATH_DOGS,
+                                    dog.uid,
+                                    dog
+                                ) { isSuccess ->
                                     Timber.tag(TAG).d("Dog wrote to firebase.")
                                 }
                             }
@@ -116,8 +123,6 @@ class AllDogsFragment : Fragment() {
                     }
                 }
             }
-
-
         }
     }
 
