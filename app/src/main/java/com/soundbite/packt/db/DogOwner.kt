@@ -20,9 +20,6 @@ import androidx.room.PrimaryKey
 data class DogOwner(
     @PrimaryKey
     val uid: String,
-    val dogUIDs: List<String>?,
-    val created: Long,
-    val lastLogin: Long,
     val username: String,
     val firstName: String,
     val lastName: String,
@@ -30,5 +27,10 @@ data class DogOwner(
     val birthDay: Int,
     val birthMonth: Int,
     val birthYear: Int,
+    val dogUIDs: List<String>,
+    val created: Long,
+    val lastLogin: Long,
     val img: String? = null
-)
+) {
+    constructor() : this("", "", "", "", "", 0, 0, 0, emptyList(), 0, 0)
+}

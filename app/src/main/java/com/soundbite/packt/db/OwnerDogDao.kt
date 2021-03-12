@@ -22,6 +22,9 @@ interface OwnerDogDao {
     suspend fun insertOwner(dogOwner: DogOwner)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDog(dog: Dog)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDogs(dogs: List<Dog>)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
@@ -35,4 +38,10 @@ interface OwnerDogDao {
 
     @Delete
     suspend fun deleteDogs(dogs: List<Dog>)
+
+    @Query("DELETE FROM DogOwner")
+    suspend fun deleteUser()
+
+    @Query("DELETE FROM Dog")
+    suspend fun deleteAllDogs()
 }

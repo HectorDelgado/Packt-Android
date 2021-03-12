@@ -43,17 +43,17 @@ class UIDConverterTest {
         assertEquals(uuidsAsString, actual)
     }
 
-    @Test
-    fun uidListToString_nullListToNullString_pass() {
-        val actual = converter.uidListToString(null)
-        assertEquals(null, actual)
-    }
+//    @Test
+//    fun uidListToString_nullListToNullString_pass() {
+//        val actual = converter.uidListToString(null)
+//        assertEquals(null, actual)
+//    }
 
-    @Test
-    fun uidListToString_emptyListToNothing_throwException() {
-        exception.expect(IllegalArgumentException::class.java)
-        converter.uidListToString(emptyList())
-    }
+//    @Test
+//    fun uidListToString_emptyListToNothing_throwException() {
+//        exception.expect(IllegalArgumentException::class.java)
+//        converter.uidListToString(emptyList())
+//    }
 
     @Test
     fun stringToUidList_nonNullStringToNonNullList_pass() {
@@ -61,17 +61,17 @@ class UIDConverterTest {
         assertEquals(uuidsAsList, actual)
     }
 
-    @Test
-    fun stringToUidList_nullStringToNullList_pass() {
-        val actual = converter.stringToUidList(null)
-        assertEquals(null, actual)
-    }
+//    @Test
+//    fun stringToUidList_nullStringToNullList_pass() {
+//        val actual = converter.stringToUidList(null)
+//        assertEquals(null, actual)
+//    }
 
-    @Test
-    fun stringToUidList_emptyStringToNothing_throwException() {
-        exception.expect(IllegalArgumentException::class.java)
-        converter.stringToUidList("")
-    }
+//    @Test
+//    fun stringToUidList_emptyStringToNothing_throwException() {
+//        exception.expect(IllegalArgumentException::class.java)
+//        converter.stringToUidList("")
+//    }
 
     private fun regexPatternFound(regex: String, matcher: String): Boolean {
         val pattern = Pattern.compile(regex)

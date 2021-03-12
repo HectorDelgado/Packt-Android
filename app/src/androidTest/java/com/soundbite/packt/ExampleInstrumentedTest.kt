@@ -99,10 +99,7 @@ class ExampleInstrumentedTest {
     @Test
     fun userDatabase_addDogOwner_usernameMatches() = runBlocking {
         val dogOwner = DogOwner(
-            UUID.randomUUID().toString(),
-            null,
-            System.currentTimeMillis() / 1000,
-            System.currentTimeMillis() / 1000,
+            "89aj-faeff-faef-343f-afae-afea",
             "JENKINS1073",
             "Joaquin",
             "Delgado",
@@ -110,6 +107,10 @@ class ExampleInstrumentedTest {
             6,
             3,
             1992,
+            dogs.map { it.uid },
+            System.currentTimeMillis() / 1000,
+            System.currentTimeMillis() / 1000,
+
             null
         )
 

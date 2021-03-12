@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -15,10 +14,10 @@ import androidx.navigation.fragment.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding
+import com.soundbite.packt.db.DogOwner
 import com.soundbite.packt.db.UserDatabase
 import com.soundbite.packt.model.UserViewModel
 import com.soundbite.packt.model.UserViewModelFactory
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -29,17 +28,17 @@ import timber.log.Timber
  */
 
 class HomeFragment : Fragment() {
+    private val TAG = "T-${javaClass.simpleName}"
+    private var _binding: FragmentHomeBinding? = null
     private val binding
         get() = _binding!!
+
     private val db by lazy {
         UserDatabase.getInstance(requireContext().applicationContext)
     }
     private val userViewModel: UserViewModel by viewModels {
         UserViewModelFactory(db.ownerDogDao())
     }
-    private val TAG = "T-${javaClass.simpleName}"
-
-    private var _binding: FragmentHomeBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,22 +55,24 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        userViewModel.currentUser?.let { user ->
-            lifecycleScope.launch {
-                val isUserNew = !userViewModel.dataExistsOnRemoteDatabase("users", user.uid)
-                if (isUserNew) {
-                    // TODO delay is just temporary for now
-                    delay(3000)
+        // TODO Current user is not updated internally or new user is not detected!
+        lifecycleScope.launch {
+            userViewModel.currentUser?.let { fbUser ->
+                Timber.tag(TAG).d("User UID is ${fbUser.uid}")
+                if (userViewModel.isNewUser(fbUser.uid)) {
+                    Timber.tag(TAG).d("User not found in remote database")
                     findNavController()
                         .navigate(
                             HomeFragmentDirections.actionHomeFragmentToNewUserFragment()
                         )
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Welcome back to packt!",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Timber.tag(TAG).d("User found in remote database")
+                    val user = userViewModel.readDataFromDatabase(
+                        UserViewModel.DATABASE_PATH_USERS,
+                        fbUser.uid,
+                        DogOwner::class.java
+                    )
+                    binding.tempTV.text = "Welcome to Packt ${user?.username}"
                 }
             }
         }

@@ -33,16 +33,30 @@
         android:label="fragment_new_user"
         tools:layout="@layout/fragment_new_user" >
         <action
-            android:id="@+id/action_newUserFragment_to_newDogsFragment"
-            app:destination="@id/newDogsFragment" />
+            android:id="@+id/action_newUserFragment_to_allDogsFragment"
+            app:destination="@id/allDogsFragment" />
     </fragment>
     <fragment
         android:id="@+id/newDogsFragment"
-        android:name="com.soundbite.packt.NewDogsFragment"
+        android:name="com.soundbite.packt.ui.NewDogFragment"
         android:label="fragment_new_dogs"
         tools:layout="@layout/fragment_new_dogs" >
         <action
-            android:id="@+id/action_newDogsFragment_to_homeFragment"
+            android:id="@+id/action_newDogsFragment_to_allDogsFragment"
+            app:destination="@id/allDogsFragment"
+            app:popUpTo="@id/allDogsFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/allDogsFragment"
+        android:name="com.soundbite.packt.ui.AllDogsFragment"
+        android:label="fragment_all_dogs"
+        tools:layout="@layout/fragment_all_dogs" >
+        <action
+            android:id="@+id/action_allDogsFragment_to_newDogsFragment"
+            app:destination="@id/newDogsFragment" />
+        <action
+            android:id="@+id/action_allDogsFragment_to_homeFragment"
             app:destination="@id/homeFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="true" />
