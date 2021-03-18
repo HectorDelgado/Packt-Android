@@ -1,31 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentLayout"
+    android:background="#ff33ea"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
 
     <ImageView
         android:id="@+id/dogIV"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_weight="1"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/ic_temp_dogcircle" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/dogNameTV"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/dogNameTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Fluffy" />
-        <TextView
-            android:id="@+id/dogBreedTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Breed: Poodle/Mutt" />
-    </LinearLayout>
-</LinearLayout>
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/dogIV"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="8dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="Sir Fluffy the 3rd of the paramount" />
+
+    <TextView
+        android:id="@+id/dogBreedTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/dogNameTV"
+        app:layout_constraintTop_toBottomOf="@id/dogNameTV"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Poodle/Mutt" />
+</androidx.constraintlayout.widget.ConstraintLayout>

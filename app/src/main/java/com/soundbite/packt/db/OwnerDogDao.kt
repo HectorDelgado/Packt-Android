@@ -12,14 +12,14 @@ import androidx.room.Update
  */
 @Dao
 interface OwnerDogDao {
-    @Query("SELECT * FROM DogOwner LIMIT 1")
-    suspend fun getDogOwner(): DogOwner
+    @Query("SELECT * FROM User LIMIT 1")
+    suspend fun getDogOwner(): User
 
     @Query("SELECT * FROM Dog")
     suspend fun getDogs(): List<Dog>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOwner(dogOwner: DogOwner)
+    suspend fun insertOwner(user: User)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDog(dog: Dog)
@@ -28,18 +28,18 @@ interface OwnerDogDao {
     suspend fun insertDogs(dogs: List<Dog>)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateOwner(dogOwner: DogOwner)
+    suspend fun updateOwner(user: User)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateDogs(dogs: List<Dog>)
 
     @Delete
-    suspend fun deleteDogOwner(dogOwner: DogOwner)
+    suspend fun deleteDogOwner(user: User)
 
     @Delete
     suspend fun deleteDogs(dogs: List<Dog>)
 
-    @Query("DELETE FROM DogOwner")
+    @Query("DELETE FROM User")
     suspend fun deleteUser()
 
     @Query("DELETE FROM Dog")

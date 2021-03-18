@@ -8,20 +8,20 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class OwnerDogViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
-    fun getDogOwner(): Flow<DogOwner> = flow {
+    fun getDogOwner(): Flow<User> = flow {
         emit(ownerDogDao.getDogOwner())
     }
     fun getDogs(): Flow<List<Dog>> = flow {
         emit(ownerDogDao.getDogs())
     }
-    fun insertDogOwner(dogOwner: DogOwner) = viewModelScope.launch {
-        ownerDogDao.insertOwner(dogOwner)
+    fun insertDogOwner(user: User) = viewModelScope.launch {
+        ownerDogDao.insertOwner(user)
     }
     fun insertDogs(dogs: List<Dog>) = viewModelScope.launch {
         ownerDogDao.insertDogs(dogs)
     }
-    fun insertDogOwnerAndDogs(dogOwner: DogOwner, dogs: List<Dog>) = viewModelScope.launch {
-        ownerDogDao.insertOwner(dogOwner)
+    fun insertDogOwnerAndDogs(user: User, dogs: List<Dog>) = viewModelScope.launch {
+        ownerDogDao.insertOwner(user)
         ownerDogDao.insertDogs(dogs)
     }
 }

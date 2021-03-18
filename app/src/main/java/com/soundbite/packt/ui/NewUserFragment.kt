@@ -50,6 +50,7 @@ class NewUserFragment : Fragment() {
                 val firstName = it.toString()
                 val maxLength = resources.getInteger(R.integer.maxLength_firstName)
 
+                // Does not hide warning when firstname is empty
                 if (firstName.isNotEmpty()) {
                     userViewModel.setFirstName(firstName, maxLength) { result ->
                         result.onSuccess {
@@ -124,6 +125,7 @@ class NewUserFragment : Fragment() {
             }
         }
 
+        // Date picker gives issues when date is wrong then fixed
         val dateListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             userViewModel.setDateOfBirth(dayOfMonth, month + 1, year) { result ->
                 result.onSuccess { date ->
@@ -138,7 +140,13 @@ class NewUserFragment : Fragment() {
         }
 
         binding.dateOfBirthET.setOnClickListener {
-            DatePickerDialog(requireContext(), dateListener, 2021, 1, 1).show()
+            DatePickerDialog(
+                requireContext(),
+                dateListener,
+                2021,
+                1,
+                1
+            ).show()
         }
 
         binding.nextPageBtn.setOnClickListener {
