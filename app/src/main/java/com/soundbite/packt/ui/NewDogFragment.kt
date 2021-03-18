@@ -47,7 +47,10 @@ class NewDogFragment : Fragment() {
         override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
             val dogBreed = dogBreeds[position].name
             val dogBreedID = dogBreeds[position].id
+
+            // Might have to remove this
             val maxChars = resources.getInteger(R.integer.maxLength_firstName)
+
             userViewModel.setDogBreed(dogBreed, dogBreedID, maxChars) { result ->
                 result.onSuccess {
                 }

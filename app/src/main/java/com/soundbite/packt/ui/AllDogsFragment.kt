@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.soundbite.packt.adapter.DogBriefAdapter
 import com.soundbite.packt.databinding.FragmentAllDogsBinding
-import com.soundbite.packt.db.DogOwner
+import com.soundbite.packt.db.User
 import com.soundbite.packt.db.UserDatabase
 import com.soundbite.packt.model.DogBriefItem
 import com.soundbite.packt.model.UserViewModel
@@ -52,6 +52,12 @@ class AllDogsFragment : Fragment() {
         return binding.root
     }
 
+    private val dogListener = object : DogBriefAdapter.DogListener {
+        override fun onClick(dogBriefItem: DogBriefItem) {
+            displayMessage("$dogBriefItem was clicked")
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -61,7 +67,7 @@ class AllDogsFragment : Fragment() {
             }
 
             withContext(Dispatchers.Main) {
-                dogBriefAdapter = DogBriefAdapter((dogBriefItems))
+                dogBriefAdapter = DogBriefAdapter(dogBriefItems, dogListener)
                 binding.dogsRV.apply {
                     adapter = dogBriefAdapter
                     layoutManager = LinearLayoutManager(requireContext())
@@ -77,12 +83,13 @@ class AllDogsFragment : Fragment() {
 
         binding.doneBtn.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
+                // Make sure user enters at least one dog!
                 val dogOwner = userViewModel.getDogOwner().single()
                 val dogs = userViewModel.getDogs().single()
 
                 userViewModel.clearDatabase {
-                    val user = DogOwner(
-                        userViewModel.currentUser!!.uid,
+                    val user = User(
+                        dogOwner.uid,
                         dogOwner.username,
                         dogOwner.firstName,
                         dogOwner.lastName,
@@ -103,6 +110,7 @@ class AllDogsFragment : Fragment() {
                         user.uid,
                         user
                     ) { isSuccess ->
+                        // If failure, display message
                         if (isSuccess) {
                             Timber.tag(TAG).d("User wrote to firebase.")
                             dogs.forEach { dog ->

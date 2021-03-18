@@ -14,7 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.soundbite.packt.R
 import com.soundbite.packt.databinding.FragmentHomeBinding
-import com.soundbite.packt.db.DogOwner
+import com.soundbite.packt.db.User
 import com.soundbite.packt.db.UserDatabase
 import com.soundbite.packt.model.UserViewModel
 import com.soundbite.packt.model.UserViewModelFactory
@@ -70,7 +70,7 @@ class HomeFragment : Fragment() {
                     val user = userViewModel.readDataFromDatabase(
                         UserViewModel.DATABASE_PATH_USERS,
                         fbUser.uid,
-                        DogOwner::class.java
+                        User::class.java
                     )
                     binding.tempTV.text = "Welcome to Packt ${user?.username}"
                 }
@@ -92,18 +92,21 @@ class HomeFragment : Fragment() {
             R.id.menu_signOut -> {
                 Timber.tag(TAG).d("User is signing out.")
 
-                AuthUI.getInstance()
-                    .signOut(requireContext())
-                    .addOnSuccessListener {
-                        Timber.tag(TAG).d("User signed out successfully.")
-                        findNavController()
-                            .navigate(
-                                HomeFragmentDirections.actionHomeFragmentToInitialFragment()
-                            )
-                    }
-                    .addOnFailureListener {
-                        Timber.tag(TAG).e("Error signing out user.")
-                    }
+                userViewModel.clearDatabase {
+                    // Clear local databse when user signs outs
+                    AuthUI.getInstance()
+                        .signOut(requireContext())
+                        .addOnSuccessListener {
+                            Timber.tag(TAG).d("User signed out successfully.")
+                            findNavController()
+                                .navigate(
+                                    HomeFragmentDirections.actionHomeFragmentToInitialFragment()
+                                )
+                        }
+                        .addOnFailureListener {
+                            Timber.tag(TAG).e("Error signing out user.")
+                        }
+                }
                 true
             }
             R.id.menu_item2 -> {

@@ -4,7 +4,7 @@ import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.soundbite.packt.db.Dog
-import com.soundbite.packt.db.DogOwner
+import com.soundbite.packt.db.User
 import com.soundbite.packt.db.OwnerDogDao
 import com.soundbite.packt.db.OwnerDogViewModel
 import com.soundbite.packt.db.OwnerDogViewModelFactory
@@ -98,7 +98,7 @@ class ExampleInstrumentedTest {
 
     @Test
     fun userDatabase_addDogOwner_usernameMatches() = runBlocking {
-        val dogOwner = DogOwner(
+        val dogOwner = User(
             "89aj-faeff-faef-343f-afae-afea",
             "JENKINS1073",
             "Joaquin",

@@ -9,8 +9,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.soundbite.packt.db.Dog
-import com.soundbite.packt.db.DogOwner
 import com.soundbite.packt.db.OwnerDogDao
+import com.soundbite.packt.db.User
 import com.soundbite.packt.domain.RetrofitServiceBuilder
 import com.soundbite.packt.network.DogApi
 import com.soundbite.packt.util.ValidationError
@@ -119,14 +119,14 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
 
     // ROOM DATABASE OPERATIONS
 
-    fun getDogOwner(): Flow<DogOwner> = flow {
+    fun getDogOwner(): Flow<User> = flow {
         emit(ownerDogDao.getDogOwner())
     }
     fun getDogs(): Flow<List<Dog>> = flow {
         emit(ownerDogDao.getDogs())
     }
-    fun insertDogOwner(dogOwner: DogOwner) = viewModelScope.launch {
-        ownerDogDao.insertOwner(dogOwner)
+    fun insertDogOwner(user: User) = viewModelScope.launch {
+        ownerDogDao.insertOwner(user)
     }
     fun insertDog(dog: Dog) = viewModelScope.launch {
         ownerDogDao.insertDog(dog)
@@ -134,8 +134,8 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     fun insertDogs(dogs: List<Dog>) = viewModelScope.launch {
         ownerDogDao.insertDogs(dogs)
     }
-    fun insertDogOwnerAndDogs(dogOwner: DogOwner, dogs: List<Dog>) = viewModelScope.launch {
-        ownerDogDao.insertOwner(dogOwner)
+    fun insertDogOwnerAndDogs(user: User, dogs: List<Dog>) = viewModelScope.launch {
+        ownerDogDao.insertOwner(user)
         ownerDogDao.insertDogs(dogs)
     }
     fun clearDatabase(onCompletion: () -> Unit) = viewModelScope.launch {
@@ -261,6 +261,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
         maxCharacters: Int,
         validationResult: (Result<String>) -> Unit
     ) {
+        // Validation not really required
         validateStringField(breed, maxCharacters) { result ->
             result.onSuccess {
                 dogBreed = it
@@ -377,7 +378,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
     //  Builders
     // //////////////////////////
 
-    fun buildUser(result: (Result<DogOwner>) -> Unit) {
+    fun buildUser(result: (Result<User>) -> Unit) {
         when {
             currentUser == null -> {
                 result(Result.failure(ValidationError.MissingFieldError("user??")))
@@ -404,7 +405,7 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
                 currentUser?.also {
                     result(
                         Result.success(
-                            DogOwner(
+                            User(
                                 it.uid,
                                 _username,
                                 _firstName,
@@ -596,10 +597,8 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
             field.length > maxLength -> {
                 Timber.tag(TAG).d("null length reached")
                 result(
-                    kotlin.Result.failure(
-                        com.soundbite.packt.util.ValidationError.MaxLengthReachedError(
-                            maxLength
-                        )
+                    Result.failure(
+                        ValidationError.MaxLengthReachedError(maxLength)
                     )
                 )
             }
@@ -607,7 +606,11 @@ class UserViewModel(private val ownerDogDao: OwnerDogDao) : ViewModel() {
                 Timber.tag(TAG).d("forbid chars not null")
                 if (!field.contains(regex)) {
                     val lastChar = field.last()
-                    result(Result.failure(ValidationError.IllegalCharacterError(lastChar)))
+                    result(
+                        Result.failure(
+                            ValidationError.IllegalCharacterError(lastChar)
+                        )
+                    )
                 } else {
                     Timber.tag(TAG).d("We found no issues")
                     result(Result.success(field.trim()))

@@ -12,7 +12,7 @@ import com.soundbite.packt.model.SingletonWithArgHolder
  * Use the [SingletonWithArgHolder.getInstance] method to create
  * a singleton instance of this database.
  */
-@Database(entities = [DogOwner::class, Dog::class], version = 1)
+@Database(entities = [User::class, Dog::class], version = 1)
 @TypeConverters(DogUIDConverter::class)
 abstract class UserDatabase : RoomDatabase() {
     companion object : SingletonWithArgHolder<UserDatabase, Context>(
